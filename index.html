@@ -2523,7 +2523,7 @@ function renderTracker() {
             <div class="check-section-label">${s.section}</div>
             ${s.checks.map((c, ci) => {
               const checked = (checkState[pKey] || {})[`${si}-${ci}`] || false;
-              return `<div class="check-item" onclick="toggleCheck(${p.pair},${si},${ci},${JSON.stringify(c).replace(/'/g,'&#39;')})">
+              return `<div class="check-item" onclick="toggleCheck(${p.pair},${si},${ci})">
                 <div class="check-box${checked?' checked':''}"></div>
                 <div class="check-label${checked?' checked':''}">${c}</div>
               </div>`;
@@ -2544,18 +2544,23 @@ function renderTracker() {
 }
 
 /* ══════════════════ TOGGLE (writes to Firebase) ══════════════════ */
-function toggleCheck(pair, si, ci, itemText) {
+function toggleCheck(pair, si, ci) {
   const pKey = 'p' + pair;
   const k = `${si}-${ci}`;
   if (!checkState[pKey]) checkState[pKey] = {};
   const newVal = !checkState[pKey][k];
 
+  // Look up item text safely from trackerData (avoids HTML escaping issues)
+  const pairData = trackerData.find(p => p.pair === pair);
+  const itemText = (pairData && pairData.items[si] && pairData.items[si].checks[ci])
+    ? pairData.items[si].checks[ci]
+    : 'item';
+
   if (IS_CONFIGURED && db) {
-    // Write single key to Firebase — triggers onValue for all users
     db.ref(`visser-tracker/state/${pKey}/${k}`).set(newVal);
     pushActivity(pair, itemText, newVal);
   } else {
-    // Fallback: local only
+    // Local-only fallback (no Firebase configured)
     checkState[pKey][k] = newVal;
     renderTracker();
   }
