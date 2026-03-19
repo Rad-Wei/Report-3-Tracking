@@ -778,11 +778,180 @@ body { font-family: var(--font-b); background: var(--cream); color: var(--ink); 
 }
 .footer-gold { color: var(--gold-bright); }
 
-@media(max-width:768px){
-  .header-inner, .site-main, .site-footer { padding-left: 20px; padding-right: 20px; }
-  .nav-inner { padding: 0 20px; }
-  .guide-grid-3 { grid-template-columns: 1fr; }
-  .dflow-cols { grid-template-columns: repeat(2,1fr); }
+/* ═══════════════════ QUALITY SELF-CHECK TAB ═══════════════════ */
+.qc-summary-bar {
+  background: var(--navy);
+  border-radius: var(--radius-lg);
+  padding: 22px 28px;
+  margin-bottom: 28px;
+  display: grid;
+  grid-template-columns: 1fr repeat(5,56px) 70px;
+  gap: 8px;
+  align-items: center;
+}
+.qc-summary-bar-title { font-family: var(--font-d); font-size: 15px; font-weight:600; color: white; }
+.qc-col-hdr {
+  text-align: center; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55); font-family: var(--font-m);
+  line-height: 1.3;
+}
+.qc-col-hdr.hdr-verify {
+  color: var(--gold-bright);
+  border-left: 1px solid rgba(255,255,255,0.1);
+  padding-left: 8px;
+}
+.qc-col-pct {
+  text-align: center; font-size: 12px; font-weight: 600;
+  color: white;
+}
+.qc-col-pct.pct-verify { color: var(--gold-bright); border-left: 1px solid rgba(255,255,255,0.1); padding-left: 8px; }
+
+.qc-category {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+}
+.qc-cat-head {
+  display: grid;
+  grid-template-columns: 1fr repeat(5,56px) 70px;
+  gap: 8px;
+  align-items: center;
+  padding: 13px 20px;
+  background: var(--navy);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.qc-cat-head:hover { background: var(--navy-light); }
+.qc-cat-title {
+  font-size: 13px; font-weight: 600; color: white;
+  display: flex; align-items: center; gap: 10px;
+}
+.qc-cat-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  font-size: 10px; font-weight: 600; color: white;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-family: var(--font-m);
+}
+.qc-cat-pct {
+  text-align: center; font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.6);
+}
+.qc-cat-pct.pct-v { color: var(--gold-bright); border-left: 1px solid rgba(255,255,255,0.15); padding-left: 8px; }
+.qc-cat-chevron { color: rgba(255,255,255,0.4); font-size: 12px; transition: transform 0.2s; margin-left: 6px; }
+.qc-cat-chevron.open { transform: rotate(180deg); }
+
+.qc-col-labels {
+  display: grid;
+  grid-template-columns: 1fr repeat(5,56px) 70px;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 20px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+}
+.qc-col-label {
+  text-align: center;
+  font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink3); font-family: var(--font-m);
+}
+.qc-col-label.lbl-verify {
+  color: var(--gold); font-weight: 700;
+  border-left: 2px solid var(--gold-pale);
+  padding-left: 8px;
+}
+.qc-col-label:first-child { text-align: left; }
+
+.qc-items-body { display: none; }
+.qc-items-body.open { display: block; }
+
+.qc-item-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(5,56px) 70px;
+  gap: 8px;
+  align-items: center;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.qc-item-row:last-child { border-bottom: none; }
+.qc-item-row:hover { background: var(--cream); }
+.qc-item-text {
+  font-size: 12.5px; color: var(--ink2); line-height: 1.45;
+}
+.qc-cell {
+  display: flex; align-items: center; justify-content: center;
+}
+.qc-cell.cell-verify {
+  border-left: 2px solid var(--gold-pale);
+  padding-left: 4px;
+}
+.qc-box {
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border-md);
+  background: var(--white);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; flex-shrink: 0;
+  position: relative;
+}
+.qc-box:hover { border-color: var(--navy); transform: scale(1.08); }
+.qc-box.qc-checked { background: var(--navy); border-color: var(--navy); }
+.qc-box.qc-checked::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; }
+.qc-box.qc-verify-box { border-color: rgba(184,134,11,0.4); }
+.qc-box.qc-verify-box:hover { border-color: var(--gold); }
+.qc-box.qc-verify-box.qc-checked { background: var(--gold); border-color: var(--gold); }
+
+/* Final Integration card */
+.qc-final-card {
+  background: var(--white);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-top: 24px;
+}
+.qc-final-head {
+  background: linear-gradient(135deg, #1C1408 0%, #3A2A08 100%);
+  padding: 18px 24px;
+  display: flex; align-items: center; gap: 14px;
+}
+.qc-final-icon {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: var(--gold-bright); color: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; font-weight: 700;
+}
+.qc-final-head h3 { font-family: var(--font-d); font-size: 18px; font-weight: 600; color: white; }
+.qc-final-head p  { font-size: 11.5px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+.qc-final-body { padding: 0; }
+.qc-final-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.qc-final-row:last-child { border-bottom: none; }
+.qc-final-row:hover { background: var(--gold-pale); }
+.qc-final-text { flex: 1; font-size: 13px; color: var(--ink2); line-height: 1.45; }
+.qc-final-cell { flex-shrink: 0; }
+
+/* Mobile scroll for quality check */
+.qc-scroll-wrap { overflow-x: auto; }
+@media(max-width: 700px) {
+  .qc-summary-bar,
+  .qc-cat-head,
+  .qc-col-labels,
+  .qc-item-row { grid-template-columns: 1fr repeat(5,44px) 56px; gap: 4px; }
+  .qc-summary-bar { padding: 14px 12px; }
+  .qc-cat-head, .qc-col-labels, .qc-item-row { padding: 10px 12px; }
 }
 
 /* ═══════════════════ FIREBASE UI ═══════════════════ */
@@ -992,6 +1161,7 @@ body { font-family: var(--font-b); background: var(--cream); color: var(--ink); 
     <button class="nav-btn" onclick="switchTab('formulas',this)"><span class="nav-icon">∑</span> Formula Reference</button>
     <button class="nav-btn" onclick="switchTab('deps',this)"><span class="nav-icon">⤳</span> Interdependencies</button>
     <button class="nav-btn" onclick="switchTab('tracker',this)"><span class="nav-icon">◉</span> Progress Tracker</button>
+    <button class="nav-btn" onclick="switchTab('quality',this)"><span class="nav-icon">✦</span> Quality Self-Check</button>
   </div>
 </nav>
 
@@ -2178,6 +2348,42 @@ body { font-family: var(--font-b); background: var(--cream); color: var(--ink); 
   <div class="tracker-grid" id="tracker-grid"></div>
 </div>
 
+<!-- ══════════════════════════════════════
+     TAB 6 · QUALITY SELF-CHECK
+══════════════════════════════════════ -->
+<div id="tab-quality" class="tab-panel">
+  <div class="sec-head">
+    <h2>Section Quality Self-Check Tracker</h2>
+    <p>Each pair checks off every item in their column before submitting for integration. If an item cannot be checked, the pair must note the fix needed in the group. <strong>Pair 5 owns the verification column</strong> and the Final Integration section.</p>
+  </div>
+
+  <!-- Column summary bar -->
+  <div class="qc-summary-bar" id="qc-summary-bar">
+    <div class="qc-summary-bar-title">Overall completion by pair</div>
+    <div class="qc-col-hdr" id="qcs-p1">P1<br><span id="qcs-p1-pct">0%</span></div>
+    <div class="qc-col-hdr" id="qcs-p2">P2<br><span id="qcs-p2-pct">0%</span></div>
+    <div class="qc-col-hdr" id="qcs-p3">P3<br><span id="qcs-p3-pct">0%</span></div>
+    <div class="qc-col-hdr" id="qcs-p4">P4<br><span id="qcs-p4-pct">0%</span></div>
+    <div class="qc-col-hdr" id="qcs-p5">P5<br><span id="qcs-p5-pct">0%</span></div>
+    <div class="qc-col-hdr hdr-verify">P5 Verify<br><span id="qcs-pv-pct">0%</span></div>
+  </div>
+
+  <!-- Categories rendered by JS -->
+  <div id="qc-categories-wrap"></div>
+
+  <!-- Final Integration (Pair 5 only) -->
+  <div class="qc-final-card">
+    <div class="qc-final-head">
+      <div class="qc-final-icon">5</div>
+      <div>
+        <h3>Final Integration Verification</h3>
+        <p>Pair 5 only — complete this section before report submission</p>
+      </div>
+    </div>
+    <div class="qc-final-body" id="qc-final-body"></div>
+  </div>
+</div>
+
 </main>
 
 <footer class="site-footer">
@@ -2618,6 +2824,175 @@ if (IS_CONFIGURED && db) {
   // No Firebase — render tracker in local mode
   renderTracker();
   renderActivity([]);
+}
+
+/* ══════════════════════════════════════════
+   QUALITY SELF-CHECK — DATA
+══════════════════════════════════════════ */
+const qcCategories = [
+  { title: 'Strategic Logic Checklist', items: [
+    'Section links directly to at least one Strategic Objective',
+    'Recommendations grounded in findings from Reports 1 & 2',
+    'Clear logic flow: analysis → strategy → action → measurement',
+    'Initiatives respond to PESTEL or Five Forces findings',
+    'Recommendations feasible for a sole proprietorship',
+  ]},
+  { title: 'Data Consistency Checklist', items: [
+    'Cost estimates align with Garden Cart production estimate (>$350/unit)',
+    'KPI baselines and targets consistent across sections',
+    "Timeline aligns with Marcel's 2026 product launch goal",
+    'Risk scores calculated correctly (Likelihood × Impact)',
+    'Resource requirements match initiative scope',
+  ]},
+  { title: 'Alignment with Prior Reports', items: [
+    'Section cites both previous reports',
+    'Strategic objectives address the four key business issues',
+    "Porter's Five Forces insights reflected in at least one initiative or risk",
+    'First-mover advantage of Garden Cart referenced',
+    'SWOT analysis informs risk mitigation',
+  ]},
+  { title: 'Academic Writing Quality', items: [
+    'Written in third-person academic voice',
+    'All claims supported with citations',
+    'Tables and figures labelled correctly',
+    'APA 7 citation format used consistently',
+    'Key terms defined on first use (RHFAC, CAC, RACI)',
+  ]},
+  { title: 'Strategic Feasibility', items: [
+    'Actions executable by a small team or sole proprietor',
+    'Timeline realistic for part-time founder',
+    'KPI targets realistic for early-stage company',
+    'Partnerships already supported by previous report findings',
+    'Recommendations actionable for Marcel Visser',
+  ]},
+];
+
+const qcFinalItems = [
+  'All pairs completed checklist',
+  'All inconsistencies corrected',
+  'Financial data aligned across sections',
+  'Strategic logic consistent throughout report',
+  'Report ready for submission',
+];
+
+const QC_PAIRS = ['p1','p2','p3','p4','p5','pv'];
+let qcState = {};
+
+function qcKey(ci, ii, pk)  { return `c${ci}_i${ii}_${pk}`; }
+function qcFinalKey(i)      { return `f_${i}`; }
+function qcGet(key)         { return qcState[key] === true; }
+
+function qcSet(key, val) {
+  qcState[key] = val;
+  if (IS_CONFIGURED && db) {
+    db.ref(`visser-tracker/quality/${key}`).set(val || null);
+  }
+  renderQC();
+}
+
+function qcColPct(pk) {
+  const total = qcCategories.reduce((s,c) => s + c.items.length, 0);
+  let done = 0;
+  qcCategories.forEach((cat,ci) => cat.items.forEach((_,ii) => { if (qcGet(qcKey(ci,ii,pk))) done++; }));
+  return total ? Math.round((done/total)*100) : 0;
+}
+
+function renderQCSummary() {
+  QC_PAIRS.forEach(pk => {
+    const id = pk === 'pv' ? 'qcs-pv-pct' : `qcs-${pk}-pct`;
+    const el = document.getElementById(id);
+    if (el) el.textContent = qcColPct(pk) + '%';
+  });
+}
+
+function renderQCCategories() {
+  const wrap = document.getElementById('qc-categories-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  qcCategories.forEach((cat, ci) => {
+    const div = document.createElement('div');
+    div.className = 'qc-category';
+    const bodyId = `qc-cat-body-${ci}`;
+    const pairPcts = QC_PAIRS.map(pk => {
+      const done = cat.items.filter((_,ii) => qcGet(qcKey(ci,ii,pk))).length;
+      return Math.round((done/cat.items.length)*100);
+    });
+    div.innerHTML = `
+      <div class="qc-cat-head" onclick="toggleQCCat('${bodyId}',this)">
+        <div class="qc-cat-title">
+          <div class="qc-cat-num">${ci+1}</div>
+          ${cat.title}
+          <span class="qc-cat-chevron open" id="chev-${ci}">▼</span>
+        </div>
+        ${[0,1,2,3,4].map(i=>`<div class="qc-cat-pct">${pairPcts[i]}%</div>`).join('')}
+        <div class="qc-cat-pct pct-v">${pairPcts[5]}%</div>
+      </div>
+      <div class="qc-col-labels">
+        <div class="qc-col-label">Checklist Item</div>
+        <div class="qc-col-label">P1</div><div class="qc-col-label">P2</div>
+        <div class="qc-col-label">P3</div><div class="qc-col-label">P4</div>
+        <div class="qc-col-label">P5</div>
+        <div class="qc-col-label lbl-verify">P5 Verify</div>
+      </div>
+      <div class="qc-items-body open" id="${bodyId}">
+        ${cat.items.map((item,ii) => `
+          <div class="qc-item-row">
+            <div class="qc-item-text">${item}</div>
+            ${['p1','p2','p3','p4','p5'].map(pk=>`
+              <div class="qc-cell">
+                <div class="qc-box${qcGet(qcKey(ci,ii,pk))?' qc-checked':''}"
+                     onclick="qcToggle('${qcKey(ci,ii,pk)}')"></div>
+              </div>`).join('')}
+            <div class="qc-cell cell-verify">
+              <div class="qc-box qc-verify-box${qcGet(qcKey(ci,ii,'pv'))?' qc-checked':''}"
+                   onclick="qcToggle('${qcKey(ci,ii,'pv')}')"></div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+    wrap.appendChild(div);
+  });
+}
+
+function renderQCFinal() {
+  const body = document.getElementById('qc-final-body');
+  if (!body) return;
+  body.innerHTML = qcFinalItems.map((item,i) => {
+    const checked = qcGet(qcFinalKey(i));
+    return `<div class="qc-final-row">
+      <div class="qc-final-text">${item}</div>
+      <div class="qc-final-cell">
+        <div class="qc-box qc-verify-box${checked?' qc-checked':''}"
+             onclick="qcFinalToggle(${i})" style="width:24px;height:24px;border-radius:6px"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderQC() {
+  renderQCCategories();
+  renderQCFinal();
+  renderQCSummary();
+}
+
+function qcToggle(key)    { qcSet(key, !qcGet(key)); }
+function qcFinalToggle(i) { const k=qcFinalKey(i); qcSet(k, !qcGet(k)); }
+
+function toggleQCCat(bodyId, headEl) {
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  const isOpen = body.classList.toggle('open');
+  const chev = headEl.querySelector('.qc-cat-chevron');
+  if (chev) chev.classList.toggle('open', isOpen);
+}
+
+/* Firebase listener for quality state */
+if (IS_CONFIGURED && db) {
+  db.ref('visser-tracker/quality').on('value', snapshot => {
+    qcState = snapshot.val() || {};
+    renderQC();
+  });
+} else {
+  renderQC();
 }
 </script>
 
