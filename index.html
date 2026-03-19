@@ -1,0 +1,2620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visser Accessibility Solutions — Report 3 Command Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Firebase SDK (compat v9) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+:root {
+  --navy:       #0D1F3C;
+  --navy-mid:   #162B4D;
+  --navy-light: #1E3A5F;
+  --navy-pale:  #EBF0F7;
+  --gold:       #B8860B;
+  --gold-bright:#D4A017;
+  --gold-pale:  #FDF8EE;
+  --cream:      #F9F7F3;
+  --white:      #FFFFFF;
+  --border:     rgba(13,31,60,0.1);
+  --border-md:  rgba(13,31,60,0.18);
+  --ink:        #0D1F3C;
+  --ink2:       #3A5278;
+  --ink3:       #7A95B4;
+  --ink4:       #B0C2D8;
+
+  --p1:         #4A3AAA; --p1-bg: #EEEDFE; --p1-mid: #7F77DD; --p1-border: #BEB8EF;
+  --p2:         #1A5FA3; --p2-bg: #EBF4FD; --p2-mid: #3B8ADD; --p2-border: #A8CDF0;
+  --p3:         #2A5C0A; --p3-bg: #EBF4E2; --p3-mid: #5C9C22; --p3-border: #A8D080;
+  --p4:         #484540; --p4-bg: #F2F0EC; --p4-mid: #8A877E; --p4-border: #C4C0B8;
+  --p5:         #892020; --p5-bg: #FDECEC; --p5-mid: #D44A4A; --p5-border: #F0A8A8;
+
+  --success:    #1E6E3A; --success-bg: #E6F6ED;
+  --warn:       #8B5A00; --warn-bg:   #FEF3DC;
+  --danger:     #8B1A1A; --danger-bg: #FDECEC;
+
+  --radius-sm:  6px;
+  --radius:     10px;
+  --radius-lg:  16px;
+  --radius-xl:  22px;
+
+  --shadow-xs:  0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md:  0 6px 24px rgba(0,0,0,0.09), 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-lg:  0 16px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06);
+
+  --font-d:     'Playfair Display', Georgia, serif;
+  --font-b:     'IBM Plex Sans', system-ui, sans-serif;
+  --font-m:     'IBM Plex Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 15px; }
+body { font-family: var(--font-b); background: var(--cream); color: var(--ink); line-height: 1.65; min-height: 100vh; }
+
+/* ═══════════════════ HEADER ═══════════════════ */
+.site-header {
+  background: var(--navy);
+  color: white;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.header-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 100% at 85% 50%, rgba(184,134,11,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 35% 60% at 5% 90%, rgba(30,58,95,0.8) 0%, transparent 60%);
+}
+.header-grid {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.04;
+  background-image: linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.header-inner {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 52px 48px 44px;
+}
+.header-eyebrow {
+  font-family: var(--font-m);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.header-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 1px;
+  background: var(--gold-bright);
+}
+.site-header h1 {
+  font-family: var(--font-d);
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 600;
+  line-height: 1.15;
+  color: white;
+  margin-bottom: 8px;
+}
+.site-header h1 span { color: rgba(255,255,255,0.45); font-weight: 400; font-style: italic; }
+.header-desc {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.48);
+  max-width: 580px;
+  line-height: 1.75;
+  margin-top: 8px;
+}
+.header-pills {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-top: 28px;
+}
+.header-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.6);
+  font-family: var(--font-m);
+}
+.pill-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ═══════════════════ NAV ═══════════════════ */
+.site-nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: var(--shadow-sm);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px;
+  display: flex; gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-btn {
+  padding: 15px 22px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink3);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font-b);
+  transition: color 0.2s, border-color 0.2s;
+  display: flex; align-items: center; gap: 7px;
+}
+.nav-btn:hover { color: var(--ink); }
+.nav-btn.active { color: var(--navy); border-bottom-color: var(--gold-bright); font-weight: 600; }
+.nav-icon { font-size: 14px; }
+
+/* ═══════════════════ LAYOUT ═══════════════════ */
+.site-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 44px 48px 100px;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeUp 0.25s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sec-head { margin-bottom: 32px; }
+.sec-head h2 {
+  font-family: var(--font-d);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.sec-head p { font-size: 13.5px; color: var(--ink3); max-width: 640px; line-height: 1.7; }
+
+.divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 48px 0; position: relative;
+}
+.divider::before {
+  content: attr(data-label);
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--cream);
+  padding: 0 16px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  font-family: var(--font-m);
+}
+
+/* ═══════════════════ BADGES & CHIPS ═══════════════════ */
+.badge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.b1 { background:var(--p1-bg); color:var(--p1); border:1px solid var(--p1-border); }
+.b2 { background:var(--p2-bg); color:var(--p2); border:1px solid var(--p2-border); }
+.b3 { background:var(--p3-bg); color:var(--p3); border:1px solid var(--p3-border); }
+.b4 { background:var(--p4-bg); color:var(--p4); border:1px solid var(--p4-border); }
+.b5 { background:var(--p5-bg); color:var(--p5); border:1px solid var(--p5-border); }
+.ball { background:#FEF0F8; color:#8B2060; border:1px solid #F0B8D8; }
+
+.status-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10.5px; font-weight: 500; padding: 3px 9px;
+  border-radius: 20px;
+}
+.status-not-started { background: var(--p4-bg); color: var(--p4); }
+.status-in-progress  { background: var(--warn-bg); color: var(--warn); }
+.status-complete     { background: var(--success-bg); color: var(--success); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* ═══════════════════ REPORT FLOW TAB ═══════════════════ */
+.legend-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
+.leg-chip {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 13px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--white);
+  font-size: 11.5px; color: var(--ink2);
+  box-shadow: var(--shadow-xs);
+}
+.leg-sw { width: 8px; height: 8px; border-radius: 50%; }
+
+.flow-col { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.flow-row { display: flex; justify-content: center; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+
+.arr-down {
+  height: 36px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative;
+}
+.arr-down::before {
+  content: ''; width: 2px; height: 22px;
+  background: var(--border-md);
+  display: block;
+}
+.arr-down::after {
+  content: ''; border-left: 6px solid transparent; border-right: 6px solid transparent;
+  border-top: 7px solid var(--border-md);
+}
+
+.flow-node {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  box-shadow: var(--shadow-xs);
+  min-width: 155px; max-width: 220px;
+  text-align: center;
+  position: relative;
+}
+.flow-node::before {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--radius);
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: rgba(184,134,11,0.04);
+}
+.flow-node:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--border-md); }
+.flow-node:hover::before { opacity: 1; }
+.flow-node.f-active { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.node-p1.f-active { border-color: var(--p1); background: var(--p1-bg); }
+.node-p2.f-active { border-color: var(--p2); background: var(--p2-bg); }
+.node-p3.f-active { border-color: var(--p3); background: var(--p3-bg); }
+.node-p4.f-active { border-color: var(--p4); background: var(--p4-bg); }
+.node-p5.f-active { border-color: var(--p5); background: var(--p5-bg); }
+.node-all.f-active { border-color: #8B2060; background: #FEF0F8; }
+
+.node-top { width: 100%; height: 3px; border-radius: 3px 3px 0 0; position: absolute; top: -1px; left: -1px; right: -1px; width: calc(100% + 2px); }
+.nt-p1 { background: var(--p1-mid); }
+.nt-p2 { background: var(--p2-mid); }
+.nt-p3 { background: var(--p3-mid); }
+.nt-p4 { background: var(--p4-mid); }
+.nt-p5 { background: var(--p5-mid); }
+.nt-all { background: #D4537E; }
+
+.node-badge {
+  display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 8px; margin-bottom: 6px;
+}
+.node-title { font-size: 12.5px; font-weight: 600; color: var(--ink); line-height: 1.3; margin-bottom: 3px; }
+.node-sub   { font-size: 10.5px; color: var(--ink3); line-height: 1.4; }
+.node-hint  { font-size: 9px; color: var(--ink4); margin-top: 6px; opacity: 0; transition: opacity 0.2s; }
+.flow-node:hover .node-hint { opacity: 1; }
+
+.h-arr { display: flex; align-items: center; color: var(--ink4); font-size: 18px; padding: 0 4px; margin-top: 18px; }
+
+.tactic-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; width: 100%; max-width: 820px;
+}
+.tactic-grid .flow-node { max-width: 100%; min-width: 0; }
+@media(max-width:680px){ .tactic-grid { grid-template-columns: repeat(2,1fr); } }
+
+/* Detail Drawer */
+#flow-detail {
+  margin-top: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: none;
+  animation: fadeUp 0.22s ease;
+}
+#flow-detail.open { display: block; }
+.fd-head {
+  padding: 18px 24px; display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--cream);
+}
+.fd-head h3 { font-family: var(--font-d); font-size: 18px; font-weight: 600; flex: 1; }
+.fd-close {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--white);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--ink3); transition: background 0.15s;
+}
+.fd-close:hover { background: var(--navy-pale); }
+.fd-body { display: grid; grid-template-columns: 1fr 1fr; }
+@media(max-width:600px){ .fd-body { grid-template-columns: 1fr; } }
+.fd-card { padding: 20px 24px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.fd-card:nth-child(even) { border-right: none; }
+.fd-card:last-child, .fd-card:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+.fd-label {
+  font-family: var(--font-m); font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink3); margin-bottom: 5px;
+}
+.fd-card h4 { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 6px; line-height: 1.35; }
+.fd-card p  { font-size: 12.5px; color: var(--ink2); line-height: 1.65; }
+
+/* ═══════════════════ PAIR GUIDES TAB ═══════════════════ */
+.pair-selector {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px;
+}
+.pair-sel-btn {
+  padding: 8px 18px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--white);
+  font-size: 12.5px; font-weight: 500; cursor: pointer;
+  font-family: var(--font-b); transition: all 0.18s;
+  color: var(--ink2);
+}
+.pair-sel-btn:hover { border-color: var(--border-md); color: var(--ink); }
+.pair-sel-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+.pair-guide { display: none; }
+.pair-guide.active { display: block; animation: fadeUp 0.22s ease; }
+
+.guide-header {
+  background: var(--navy);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.guide-header::before {
+  content: ''; position: absolute;
+  right: -40px; top: -40px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.guide-header-eyebrow {
+  font-family: var(--font-m); font-size: 9.5px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--gold-bright); margin-bottom: 10px;
+}
+.guide-header h3 { font-family: var(--font-d); font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+.guide-header .guide-members {
+  font-size: 12.5px; color: rgba(255,255,255,0.5);
+  margin-bottom: 16px;
+}
+.guide-meta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.guide-meta-item {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  padding: 5px 12px; font-size: 11px; color: rgba(255,255,255,0.65);
+  display: flex; align-items: center; gap: 6px;
+}
+
+.guide-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-bottom: 20px;
+}
+@media(max-width:720px){ .guide-grid { grid-template-columns: 1fr; } }
+.guide-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+@media(max-width:860px){ .guide-grid-3 { grid-template-columns: 1fr 1fr; } }
+@media(max-width:560px){ .guide-grid-3 { grid-template-columns: 1fr; } }
+
+.guide-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+}
+.guide-card-head {
+  padding: 12px 18px; border-bottom: 1px solid var(--border);
+  background: var(--cream);
+  display: flex; align-items: center; gap: 10px;
+}
+.guide-card-head h4 { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.guide-card-icon {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; background: var(--navy-pale); color: var(--navy);
+}
+.guide-card-body { padding: 16px 18px; }
+
+.step-list { list-style: none; }
+.step-item {
+  display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start;
+}
+.step-item:last-child { margin-bottom: 0; }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--navy); color: white;
+  font-size: 10px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-text { font-size: 12.5px; color: var(--ink2); line-height: 1.6; }
+.step-text strong { color: var(--ink); }
+
+.source-list { list-style: none; }
+.source-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.source-item:last-child { border-bottom: none; }
+.source-icon {
+  width: 26px; height: 26px; border-radius: var(--radius-sm);
+  background: var(--navy-pale); color: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-m); font-size: 8px; font-weight: 500;
+  flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.source-info { flex: 1; }
+.source-name { font-weight: 600; color: var(--ink); margin-bottom: 2px; font-size: 12px; }
+.source-url  { color: var(--p2); font-family: var(--font-m); font-size: 10.5px; }
+.source-desc { color: var(--ink3); font-size: 11px; margin-top: 2px; }
+
+.formula-box {
+  background: var(--navy);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 14px 0;
+  position: relative;
+  overflow: hidden;
+}
+.formula-box::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--gold-bright);
+}
+.formula-label {
+  font-family: var(--font-m); font-size: 9px; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--gold-bright); margin-bottom: 8px;
+}
+.formula-expr {
+  font-family: var(--font-m); font-size: 15px; color: white;
+  font-weight: 500; letter-spacing: 0.02em; line-height: 1.5;
+}
+.formula-note { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 8px; }
+
+.example-box {
+  background: var(--gold-pale);
+  border: 1px solid rgba(184,134,11,0.2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-top: 12px;
+}
+.example-label { font-family: var(--font-m); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+.example-text  { font-size: 12px; color: var(--ink2); line-height: 1.65; }
+.example-text em { font-style: normal; font-weight: 600; color: var(--ink); }
+
+.deliverable-box {
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 16px;
+}
+.deliverable-head {
+  padding: 10px 16px; background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink3); font-family: var(--font-m);
+}
+.deliverable-row {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.deliverable-row:last-child { border-bottom: none; }
+.del-col { padding: 9px 14px; }
+.del-col:first-child { width: 80px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--cream); font-family: var(--font-m); font-size: 10px; color: var(--ink3); display: flex; align-items: center; }
+.del-col:last-child  { color: var(--ink2); }
+
+.scenario-table {
+  width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 14px;
+}
+.scenario-table thead th {
+  padding: 9px 12px; text-align: left;
+  background: var(--navy); color: rgba(255,255,255,0.7);
+  font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; font-family: var(--font-m);
+}
+.scenario-table tbody td {
+  padding: 9px 12px; border-bottom: 1px solid var(--border);
+  color: var(--ink2);
+}
+.scenario-table tbody tr:last-child td { border-bottom: none; }
+.scenario-table tbody tr:hover { background: var(--cream); }
+.scenario-table .td-strong { font-weight: 600; color: var(--ink); }
+.scenario-table .td-rec { background: var(--gold-pale); font-weight: 600; color: var(--gold); }
+.scenario-table .td-recrow td { background: var(--gold-pale); }
+
+/* ═══════════════════ FORMULA REFERENCE TAB ═══════════════════ */
+.formula-ref-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media(max-width:720px){ .formula-ref-grid { grid-template-columns: 1fr; } }
+
+.fref-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.fref-head {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.fref-icon {
+  width: 40px; height: 40px; border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.fref-head-text h3 { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.fref-head-text p  { font-size: 11.5px; color: var(--ink3); line-height: 1.5; }
+.fref-body { padding: 20px 22px; }
+.fref-who {
+  font-size: 11px; color: var(--ink3); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.concept-block { margin-bottom: 18px; }
+.concept-block:last-child { margin-bottom: 0; }
+.concept-term {
+  font-family: var(--font-m); font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gold); font-weight: 500; margin-bottom: 5px;
+}
+.concept-def { font-size: 12.5px; color: var(--ink2); line-height: 1.65; }
+.concept-def strong { color: var(--ink); font-weight: 600; }
+
+.benchmark-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--success-bg); color: var(--success);
+  border: 1px solid rgba(30,110,58,0.2);
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 11px; font-weight: 500; margin-top: 8px;
+}
+.warn-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--warn-bg); color: var(--warn);
+  border: 1px solid rgba(139,90,0,0.2);
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 11px; font-weight: 500; margin-top: 8px;
+}
+
+.risk-table {
+  width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px;
+}
+.risk-table th {
+  padding: 8px 10px; background: var(--cream);
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink3);
+  border-bottom: 1px solid var(--border); text-align: left;
+}
+.risk-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--ink2); }
+.risk-table tr:last-child td { border-bottom: none; }
+.risk-high { color: var(--danger); font-weight: 600; }
+.risk-mod  { color: var(--warn); font-weight: 600; }
+.risk-low  { color: var(--success); font-weight: 600; }
+.risk-score-bar {
+  height: 6px; border-radius: 3px;
+  background: var(--cream); overflow: hidden; margin-top: 2px;
+  width: 60px;
+}
+.risk-score-fill { height: 100%; border-radius: 3px; }
+
+/* ═══════════════════ INTERDEPENDENCIES TAB ═══════════════════ */
+.dep-table-wrap {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.dep-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dep-table thead th {
+  background: var(--navy); color: rgba(255,255,255,0.65);
+  padding: 12px 18px; text-align: left;
+  font-size: 9.5px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; font-family: var(--font-m);
+}
+.dep-table tbody tr { background: var(--white); border-bottom: 1px solid var(--border); transition: background 0.15s; }
+.dep-table tbody tr:last-child { border-bottom: none; }
+.dep-table tbody tr:hover { background: var(--cream); }
+.dep-table td { padding: 12px 18px; color: var(--ink2); vertical-align: middle; }
+.dep-table .td-s { font-weight: 600; color: var(--ink); font-size: 12.5px; }
+.dep-arr {
+  display: inline-flex; align-items: center;
+  color: var(--ink4); font-size: 16px;
+}
+.badge-group { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.data-flow-visual {
+  margin-top: 32px;
+  background: var(--navy);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  color: white;
+}
+.dflow-title {
+  font-family: var(--font-d); font-size: 18px; font-weight: 600;
+  margin-bottom: 6px;
+}
+.dflow-sub { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 28px; }
+.dflow-cols {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+@media(max-width:780px){ .dflow-cols { grid-template-columns: repeat(3,1fr); } }
+.dflow-pair {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 16px 14px;
+  text-align: center;
+}
+.dflow-pair-num {
+  font-family: var(--font-m); font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gold-bright); margin-bottom: 8px;
+}
+.dflow-pair h4 { font-size: 12px; font-weight: 600; color: white; margin-bottom: 10px; line-height: 1.3; }
+.dflow-sends { font-size: 10.5px; color: rgba(255,255,255,0.45); margin-bottom: 4px; }
+.dflow-item {
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px; font-size: 10px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 4px; text-align: left; line-height: 1.4;
+}
+
+/* ═══════════════════ PROGRESS TRACKER TAB ═══════════════════ */
+.tracker-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 18px;
+}
+.tracker-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.tracker-head {
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.tracker-num {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-d); font-size: 18px; font-weight: 600;
+  flex-shrink: 0;
+}
+.tracker-head-info { flex: 1; }
+.tracker-head-info h4 { font-size: 13.5px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.tracker-head-info p  { font-size: 11px; color: var(--ink3); }
+.tracker-status { margin-left: auto; }
+
+.progress-bar-wrap { margin: 0 22px 0; padding: 14px 0 16px; border-bottom: 1px solid var(--border); }
+.progress-labels { display: flex; justify-content: space-between; margin-bottom: 7px; font-size: 11px; color: var(--ink3); }
+.progress-labels strong { color: var(--ink); font-weight: 600; }
+.progress-bar { height: 6px; border-radius: 3px; background: var(--cream); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; background: var(--navy); }
+
+.checklist-body { padding: 14px 22px 18px; }
+.check-section { margin-bottom: 16px; }
+.check-section-label {
+  font-family: var(--font-m); font-size: 9.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ink3); margin-bottom: 8px;
+}
+.check-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 8px; cursor: pointer;
+}
+.check-item:last-child { margin-bottom: 0; }
+.check-box {
+  width: 16px; height: 16px; border-radius: 4px;
+  border: 1.5px solid var(--border-md); background: var(--white);
+  flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; cursor: pointer;
+}
+.check-box.checked { background: var(--navy); border-color: var(--navy); }
+.check-box.checked::after { content: '✓'; color: white; font-size: 9px; font-weight: 700; }
+.check-label { font-size: 12px; color: var(--ink2); line-height: 1.5; transition: color 0.15s; }
+.check-label.checked { color: var(--ink3); text-decoration: line-through; }
+
+.tracker-deliverables {
+  margin: 0 22px 18px;
+  padding: 14px 16px;
+  background: var(--cream);
+  border-radius: var(--radius);
+}
+.tracker-deliverables h5 {
+  font-size: 10.5px; font-weight: 600; color: var(--ink2);
+  margin-bottom: 8px; text-transform: uppercase;
+  letter-spacing: 0.08em; font-family: var(--font-m);
+}
+.del-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 11.5px; color: var(--ink2); margin-bottom: 5px; line-height: 1.45;
+}
+.del-item::before { content: '→'; color: var(--gold); font-weight: 600; flex-shrink: 0; }
+
+.reset-btn {
+  display: block; margin: 0 22px 18px;
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: none;
+  font-size: 11.5px; color: var(--ink3);
+  cursor: pointer; font-family: var(--font-b);
+  transition: background 0.15s, color 0.15s;
+  width: calc(100% - 44px);
+}
+.reset-btn:hover { background: var(--cream); color: var(--ink); }
+
+/* ═══════════════════ FOOTER ═══════════════════ */
+.site-footer {
+  background: var(--navy);
+  padding: 28px 48px;
+  color: rgba(255,255,255,0.35);
+  font-family: var(--font-m);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-gold { color: var(--gold-bright); }
+
+@media(max-width:768px){
+  .header-inner, .site-main, .site-footer { padding-left: 20px; padding-right: 20px; }
+  .nav-inner { padding: 0 20px; }
+  .guide-grid-3 { grid-template-columns: 1fr; }
+  .dflow-cols { grid-template-columns: repeat(2,1fr); }
+}
+
+/* ═══════════════════ FIREBASE UI ═══════════════════ */
+.fb-status-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 48px; font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+.fb-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--ink4); flex-shrink: 0;
+  transition: background 0.4s;
+}
+.fb-dot.connected    { background: #1E8A4A; box-shadow: 0 0 0 3px rgba(30,138,74,0.15); }
+.fb-dot.disconnected { background: #C0392B; }
+.fb-dot.loading      { background: var(--gold-bright); animation: pulse-dot 1s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.fb-status-text { color: var(--ink3); }
+.fb-status-text strong { color: var(--ink); }
+.fb-last-update { margin-left: auto; color: var(--ink4); font-family: var(--font-m); font-size: 11px; }
+
+/* Setup Panel */
+.setup-panel {
+  background: var(--navy);
+  border-radius: var(--radius-xl);
+  padding: 36px 40px;
+  margin-bottom: 32px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.setup-panel::before {
+  content: '';
+  position: absolute; right: -60px; top: -60px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: rgba(212,160,23,0.08);
+}
+.setup-panel-eyebrow {
+  font-family: var(--font-m); font-size: 9.5px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--gold-bright); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.setup-panel h3 {
+  font-family: var(--font-d); font-size: 22px;
+  font-weight: 600; margin-bottom: 8px;
+}
+.setup-panel > p {
+  font-size: 13px; color: rgba(255,255,255,0.5);
+  max-width: 580px; line-height: 1.7; margin-bottom: 28px;
+}
+.setup-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 28px; }
+.setup-step {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.setup-step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--gold-bright); color: var(--navy);
+  font-family: var(--font-m); font-size: 10px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 8px;
+}
+.setup-step h5 { font-size: 12px; font-weight: 600; color: white; margin-bottom: 4px; }
+.setup-step p  { font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+.setup-step a  { color: var(--gold-bright); text-decoration: none; }
+.setup-step a:hover { text-decoration: underline; }
+.setup-code {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  font-family: var(--font-m);
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
+  margin-bottom: 16px;
+}
+.setup-code .c-key   { color: #7DD3FC; }
+.setup-code .c-val   { color: #86EFAC; }
+.setup-code .c-str   { color: #FDE68A; }
+.setup-code .c-cmt   { color: rgba(255,255,255,0.3); }
+.setup-rules-box {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-bottom: 16px;
+}
+.setup-rules-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+.setup-rules-text h5 { font-size: 12px; font-weight: 600; color: white; margin-bottom: 4px; }
+.setup-rules-text p  { font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+.setup-rules-text code {
+  font-family: var(--font-m); font-size: 10.5px;
+  background: rgba(255,255,255,0.1); padding: 1px 6px;
+  border-radius: 4px; color: var(--gold-bright);
+}
+.setup-dismiss-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: var(--radius);
+  background: var(--gold-bright); color: var(--navy);
+  font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer;
+  font-family: var(--font-b); transition: background 0.15s;
+}
+.setup-dismiss-btn:hover { background: #C49015; }
+
+/* Live activity feed */
+.activity-feed {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.activity-head {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  background: var(--cream);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.activity-head h4 { font-size: 13px; font-weight: 600; color: var(--ink); }
+.activity-head span { font-size: 11px; color: var(--ink3); font-family: var(--font-m); }
+.activity-list { max-height: 180px; overflow-y: auto; }
+.activity-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px; border-bottom: 1px solid var(--border);
+  font-size: 12px; animation: fadeUp 0.3s ease;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-icon { font-size: 13px; flex-shrink: 0; }
+.activity-text { color: var(--ink2); flex: 1; line-height: 1.4; }
+.activity-text strong { color: var(--ink); }
+.activity-time { color: var(--ink4); font-family: var(--font-m); font-size: 10.5px; white-space: nowrap; }
+.activity-empty { padding: 20px; text-align: center; color: var(--ink3); font-size: 12.5px; }
+
+/* Overall progress summary */
+.overall-progress {
+  background: var(--navy);
+  border-radius: var(--radius-lg);
+  padding: 22px 28px;
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 24px;
+  flex-wrap: wrap;
+}
+.overall-title {
+  font-family: var(--font-d); font-size: 16px;
+  font-weight: 600; color: white; white-space: nowrap;
+}
+.overall-bar-wrap { flex: 1; min-width: 200px; }
+.overall-bar-labels {
+  display: flex; justify-content: space-between;
+  font-size: 11px; margin-bottom: 6px;
+  color: rgba(255,255,255,0.5);
+}
+.overall-bar-labels strong { color: white; }
+.overall-bar {
+  height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.15); overflow: hidden;
+}
+.overall-bar-fill {
+  height: 100%; border-radius: 4px;
+  background: var(--gold-bright);
+  transition: width 0.5s ease;
+}
+.overall-pairs { display: flex; gap: 8px; flex-wrap: wrap; }
+.overall-pair-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  font-size: 11px; color: rgba(255,255,255,0.6);
+}
+.overall-pair-chip .pct { font-weight: 600; color: white; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ HEADER ═══════ -->
+<header class="site-header">
+  <div class="header-glow"></div>
+  <div class="header-grid"></div>
+  <div class="header-inner">
+    <div class="header-eyebrow">Visser Accessibility Solutions · Strategic Plan</div>
+    <h1>Report 3 <span>Command Centre</span></h1>
+    <p class="header-desc">A complete reference hub for all five pairs — report structure, data sources, formulas, interdependencies, and live progress tracking.</p>
+    <div class="header-pills">
+      <div class="header-pill"><div class="pill-dot" style="background:#5C9C22"></div> 5 Pairs · 10 Sections</div>
+      <div class="header-pill"><div class="pill-dot" style="background:#D4A017"></div> 9 Cross-Pair Dependencies</div>
+      <div class="header-pill"><div class="pill-dot" style="background:#3B8ADD"></div> 5 Financial Formulas</div>
+      <div class="header-pill"><div class="pill-dot" style="background:#D44A4A"></div> 10 Risk Categories</div>
+      <div class="header-pill"><div class="pill-dot" style="background:#8A877E"></div> APA 7th · ~25 pages</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════ NAV ═══════ -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="switchTab('flow',this)"><span class="nav-icon">⬡</span> Report Flow</button>
+    <button class="nav-btn" onclick="switchTab('guides',this)"><span class="nav-icon">◈</span> Pair Guides</button>
+    <button class="nav-btn" onclick="switchTab('formulas',this)"><span class="nav-icon">∑</span> Formula Reference</button>
+    <button class="nav-btn" onclick="switchTab('deps',this)"><span class="nav-icon">⤳</span> Interdependencies</button>
+    <button class="nav-btn" onclick="switchTab('tracker',this)"><span class="nav-icon">◉</span> Progress Tracker</button>
+  </div>
+</nav>
+
+<!-- Firebase connection status bar -->
+<div class="fb-status-bar" id="fb-status-bar">
+  <div class="fb-dot loading" id="fb-dot"></div>
+  <span class="fb-status-text" id="fb-status-text">Connecting to shared tracker…</span>
+  <span class="fb-last-update" id="fb-last-update"></span>
+</div>
+
+<main class="site-main">
+
+<!-- ══════════════════════════════════════
+     TAB 1 · REPORT FLOW
+══════════════════════════════════════ -->
+<div id="tab-flow" class="tab-panel active">
+  <div class="sec-head">
+    <h2>Report Structure &amp; Flow</h2>
+    <p>Click any section node to expand its brief. Sections must be written in sequence — upstream pairs feed data to those below.</p>
+  </div>
+
+  <div class="legend-bar">
+    <div class="leg-chip"><div class="leg-sw" style="background:var(--p1-mid)"></div> Pair 1 — Satish &amp; Md Fazle</div>
+    <div class="leg-chip"><div class="leg-sw" style="background:var(--p2-mid)"></div> Pair 2 — Precious &amp; Benedicta</div>
+    <div class="leg-chip"><div class="leg-sw" style="background:var(--p3-mid)"></div> Pair 3 — Paulina &amp; Jiulang</div>
+    <div class="leg-chip"><div class="leg-sw" style="background:var(--p4-mid)"></div> Pair 4 — Hamza &amp; Sonia</div>
+    <div class="leg-chip"><div class="leg-sw" style="background:var(--p5-mid)"></div> Pair 5 — Ujjwal &amp; Xiaowei</div>
+  </div>
+
+  <div class="flow-col">
+    <!-- Exec Summary -->
+    <div class="flow-row">
+      <div class="flow-node node-all" id="fn-exec" onclick="showFlowDetail('exec',this)" style="min-width:240px">
+        <div class="node-top nt-all"></div>
+        <div class="node-badge ball">All Pairs · Written Last</div>
+        <div class="node-title">Executive Summary</div>
+        <div class="node-sub">~0.5 page · 4–5 sentences</div>
+        <div class="node-hint">click to expand ↓</div>
+      </div>
+    </div>
+    <div class="arr-down"></div>
+
+    <!-- Intro + Strat -->
+    <div class="flow-row">
+      <div class="flow-node node-p1" id="fn-intro" onclick="showFlowDetail('intro',this)">
+        <div class="node-top nt-p1"></div>
+        <div class="node-badge b1">Pair 1</div>
+        <div class="node-title">1. Introduction</div>
+        <div class="node-sub">Context &amp; purpose · ~0.5 pg</div>
+        <div class="node-hint">click ↓</div>
+      </div>
+      <div class="h-arr">→</div>
+      <div class="flow-node node-p1" id="fn-strat" onclick="showFlowDetail('strat',this)">
+        <div class="node-top nt-p1"></div>
+        <div class="node-badge b1">Pair 1</div>
+        <div class="node-title">2. Strategic Objectives</div>
+        <div class="node-sub">5 SMART + CAGR market size</div>
+        <div class="node-hint">click ↓</div>
+      </div>
+    </div>
+    <div class="arr-down"></div>
+
+    <!-- Competitive -->
+    <div class="flow-row">
+      <div class="flow-node node-p2" id="fn-comp" onclick="showFlowDetail('comp',this)" style="min-width:240px">
+        <div class="node-top nt-p2"></div>
+        <div class="node-badge b2">Pair 2</div>
+        <div class="node-title">3. Competitive Positioning</div>
+        <div class="node-sub">VRIO · Pillar table · Statement</div>
+        <div class="node-hint">click ↓</div>
+      </div>
+    </div>
+    <div class="arr-down"></div>
+
+    <!-- Tactics label -->
+    <div style="text-align:center;margin-bottom:12px">
+      <span style="font-family:var(--font-m);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink3);background:var(--cream);padding:3px 12px;border-radius:10px;border:1px solid var(--border)">Section 4 — Tactical Initiatives · Pair 2</span>
+    </div>
+    <div class="flow-row">
+      <div class="tactic-grid">
+        <div class="flow-node node-p2" id="fn-t1" onclick="showFlowDetail('t1',this)"><div class="node-top nt-p2"></div><div class="node-badge b2">4.1</div><div class="node-title">Digital Marketing</div><div class="node-sub">Brand visibility</div></div>
+        <div class="flow-node node-p2" id="fn-t2" onclick="showFlowDetail('t2',this)"><div class="node-top nt-p2"></div><div class="node-badge b2">4.2</div><div class="node-title">Market Validation</div><div class="node-sub">Garden Cart pilot</div></div>
+        <div class="flow-node node-p2" id="fn-t3" onclick="showFlowDetail('t3',this)"><div class="node-top nt-p2"></div><div class="node-badge b2">4.3</div><div class="node-title">Pricing Strategy</div><div class="node-sub">3-scenario model</div></div>
+        <div class="flow-node node-p2" id="fn-t4" onclick="showFlowDetail('t4',this)"><div class="node-top nt-p2"></div><div class="node-badge b2">4.4</div><div class="node-title">Supply Chain</div><div class="node-sub">Manufacturer partner</div></div>
+        <div class="flow-node node-p2" id="fn-t5" onclick="showFlowDetail('t5',this)"><div class="node-top nt-p2"></div><div class="node-badge b2">4.5</div><div class="node-title">Partnerships</div><div class="node-sub">Municipalities + RHF</div></div>
+        <div class="flow-node node-p2" id="fn-t6" onclick="showFlowDetail('t6',this)"><div class="node-top nt-p2"></div><div class="node-badge b2">4.6</div><div class="node-title">Hiring &amp; Talent</div><div class="node-sub">RHFAC consultant</div></div>
+        <div class="flow-node node-p2" id="fn-t7" onclick="showFlowDetail('t7',this)"><div class="node-top nt-p2"></div><div class="node-badge b2">4.7</div><div class="node-title">Digital Systems</div><div class="node-sub">CRM + PM tools</div></div>
+        <div class="flow-node node-p2" id="fn-t8" onclick="showFlowDetail('t8',this)"><div class="node-top nt-p2"></div><div class="node-badge b2">4.8</div><div class="node-title">IP Protection</div><div class="node-sub">CIPO patent filing</div></div>
+      </div>
+    </div>
+    <div class="arr-down"></div>
+
+    <!-- Timeline + Resource -->
+    <div class="flow-row">
+      <div class="flow-node node-p3" id="fn-time" onclick="showFlowDetail('time',this)">
+        <div class="node-top nt-p3"></div>
+        <div class="node-badge b3">Pair 3</div>
+        <div class="node-title">5. Timeline &amp; Milestones</div>
+        <div class="node-sub">3 phases · Break-even analysis</div>
+        <div class="node-hint">click ↓</div>
+      </div>
+      <div class="h-arr">→</div>
+      <div class="flow-node node-p3" id="fn-res" onclick="showFlowDetail('res',this)">
+        <div class="node-top nt-p3"></div>
+        <div class="node-badge b3">Pair 3</div>
+        <div class="node-title">6. Resource Allocation</div>
+        <div class="node-sub">Budget · Financial narrative</div>
+        <div class="node-hint">click ↓</div>
+      </div>
+    </div>
+    <div class="arr-down"></div>
+
+    <!-- RACI + KPI -->
+    <div class="flow-row">
+      <div class="flow-node node-p4" id="fn-raci" onclick="showFlowDetail('raci',this)">
+        <div class="node-top nt-p4"></div>
+        <div class="node-badge b4">Pair 4</div>
+        <div class="node-title">7. RACI Matrix</div>
+        <div class="node-sub">Marcel + future hires</div>
+        <div class="node-hint">click ↓</div>
+      </div>
+      <div class="h-arr">→</div>
+      <div class="flow-node node-p4" id="fn-kpi" onclick="showFlowDetail('kpi',this)">
+        <div class="node-top nt-p4"></div>
+        <div class="node-badge b4">Pair 4</div>
+        <div class="node-title">8. KPIs</div>
+        <div class="node-sub">CAC · CLV · 5 categories · Projections</div>
+        <div class="node-hint">click ↓</div>
+      </div>
+    </div>
+    <div class="arr-down"></div>
+
+    <!-- Risk + Conclusion -->
+    <div class="flow-row">
+      <div class="flow-node node-p5" id="fn-risk" onclick="showFlowDetail('risk',this)">
+        <div class="node-top nt-p5"></div>
+        <div class="node-badge b5">Pair 5</div>
+        <div class="node-title">9. Risk Mitigation</div>
+        <div class="node-sub">10 risks · L×I scoring model</div>
+        <div class="node-hint">click ↓</div>
+      </div>
+      <div class="h-arr">→</div>
+      <div class="flow-node node-p5" id="fn-conc" onclick="showFlowDetail('conc',this)">
+        <div class="node-top nt-p5"></div>
+        <div class="node-badge b5">Pair 5</div>
+        <div class="node-title">10. Conclusion</div>
+        <div class="node-sub">Synthesis · No new ideas · 2 paragraphs</div>
+        <div class="node-hint">click ↓</div>
+      </div>
+    </div>
+    <div class="arr-down"></div>
+
+    <!-- References -->
+    <div class="flow-row">
+      <div class="flow-node" style="min-width:240px;cursor:default;border-top:3px solid var(--p4-mid)">
+        <div class="node-badge b4" style="margin-bottom:6px">All Pairs</div>
+        <div class="node-title">11. References</div>
+        <div class="node-sub">APA 7th edition · All cited sources</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Drawer -->
+  <div id="flow-detail">
+    <div class="fd-head">
+      <span id="fd-badge" class="badge" style="font-size:10.5px;padding:3px 10px"></span>
+      <h3 id="fd-title"></h3>
+      <button class="fd-close" onclick="closeFlowDetail()">✕</button>
+    </div>
+    <div class="fd-body" id="fd-body"></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     TAB 2 · PAIR GUIDES
+══════════════════════════════════════ -->
+<div id="tab-guides" class="tab-panel">
+  <div class="sec-head">
+    <h2>Pair-by-Pair Work Guides</h2>
+    <p>Step-by-step instructions, data sources with URLs, formulas, and deliverables for each pair. Select your pair below.</p>
+  </div>
+
+  <div class="pair-selector">
+    <button class="pair-sel-btn active" onclick="switchPair(1,this)">Pair 1 — Satish &amp; Md Fazle</button>
+    <button class="pair-sel-btn" onclick="switchPair(2,this)">Pair 2 — Precious &amp; Benedicta</button>
+    <button class="pair-sel-btn" onclick="switchPair(3,this)">Pair 3 — Paulina &amp; Jiulang</button>
+    <button class="pair-sel-btn" onclick="switchPair(4,this)">Pair 4 — Hamza &amp; Sonia</button>
+    <button class="pair-sel-btn" onclick="switchPair(5,this)">Pair 5 — Ujjwal &amp; Xiaowei</button>
+  </div>
+
+  <!-- ── PAIR 1 ── -->
+  <div id="guide-1" class="pair-guide active">
+    <div class="guide-header">
+      <div class="guide-header-eyebrow">Pair 1 · Sections 1 &amp; 2</div>
+      <h3>Introduction &amp; Strategic Objectives</h3>
+      <div class="guide-members">Satish Gurugubelli &amp; Md Fazle Elahi</div>
+      <div class="guide-meta-row">
+        <div class="guide-meta-item">📄 ~1.5 pages total</div>
+        <div class="guide-meta-item">🧮 CAGR formula required</div>
+        <div class="guide-meta-item">📤 Delivers to: All Pairs</div>
+        <div class="guide-meta-item">⚠️ Foundation section — complete first</div>
+      </div>
+    </div>
+
+    <div class="guide-grid">
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">①</div><h4>Step-by-Step Process</h4></div>
+        <div class="guide-card-body">
+          <ol class="step-list">
+            <li class="step-item"><div class="step-num">1</div><div class="step-text">Pull the <strong>4 business issues</strong> and <strong>5 SMART objectives</strong> from Report 2. These are your anchor — every other section traces back to them.</div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-text">Search Grand View Research or IBISWorld for <strong>"gardening tools market Canada"</strong> or <strong>"adaptive gardening market CAGR 2024–2030"</strong>.</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-text">If no Canada figure: take North American total × <strong>2.5%</strong> (Canada's economic share) × <strong>4%</strong> (accessible gardening segment). State this as an assumption.</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-text">Apply the CAGR formula below. Use 4.5%–6% if segment CAGR is unavailable — label it clearly as an assumption in your text.</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-text">Write the Introduction last (after Sections 2–10 are drafted) so it remains consistent with the final report. Aim for 2–3 sentence overview + 2–3 sentence prior-report summary + 1 closing sentence.</div></li>
+            <li class="step-item"><div class="step-num">6</div><div class="step-text">Restate all 5 SMART objectives in clean format: timeframe, measurable outcome, and link to one of the 4 business issues. Close with the CAGR market size figure.</div></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">🔗</div><h4>Data Sources &amp; URLs</h4></div>
+        <div class="guide-card-body">
+          <ul class="source-list">
+            <li class="source-item">
+              <div class="source-icon">GVR</div>
+              <div class="source-info">
+                <div class="source-name">Grand View Research</div>
+                <div class="source-url">grandviewresearch.com</div>
+                <div class="source-desc">Search "gardening tools market" → find CAGR and market size</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">IBI</div>
+              <div class="source-info">
+                <div class="source-name">IBISWorld</div>
+                <div class="source-url">ibisworld.com</div>
+                <div class="source-desc">Search Canada gardening industry reports</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">STA</div>
+              <div class="source-info">
+                <div class="source-name">Statista</div>
+                <div class="source-url">statista.com</div>
+                <div class="source-desc">Accessible gardening segment statistics</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">STC</div>
+              <div class="source-info">
+                <div class="source-name">Statistics Canada</div>
+                <div class="source-url">statcan.gc.ca</div>
+                <div class="source-desc">Canadian disability + accessibility population data</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">R1</div>
+              <div class="source-info">
+                <div class="source-name">Report 1 (Executive Summary, SWOT)</div>
+                <div class="source-url">Prior report — internal</div>
+                <div class="source-desc">Issue Impact Matrix and four business issues</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-card-head"><div class="guide-card-icon">∑</div><h4>CAGR Formula &amp; Example Calculation</h4></div>
+      <div class="guide-card-body">
+        <div class="formula-box">
+          <div class="formula-label">Formula</div>
+          <div class="formula-expr">Future Value = Current Value × (1 + CAGR)^Years</div>
+          <div class="formula-note">Base year: 2024 · Target year: 2030 · Years = 6</div>
+        </div>
+        <div class="example-box">
+          <div class="example-label">Example Calculation</div>
+          <div class="example-text">
+            If North American gardening tools market = <em>$2.1B USD</em><br>
+            Canada share = $2.1B × 2.5% = <em>$52.5M CAD</em><br>
+            Accessible segment = $52.5M × 4% = <em>$2.1M CAD</em> (current addressable market)<br>
+            At 5% CAGR over 6 years: $2.1M × (1.05)^6 = <em>~$2.81M CAD by 2030</em><br><br>
+            Write: <em>"This suggests a growing addressable market, reinforcing the urgency of early market entry."</em>
+          </div>
+        </div>
+        <div class="example-box" style="background:var(--navy-pale);border-color:var(--border-md);margin-top:10px">
+          <div class="example-label" style="color:var(--ink2)">Assumption Language (use if exact data unavailable)</div>
+          <div class="example-text" style="font-style:italic">"In the absence of a Canada-specific figure, the North American market size is adjusted by Canada's approximate 2.5% economic share. The accessible gardening segment is conservatively estimated at 4% of the total market (Grand View Research, 2024)."</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="deliverable-box" style="margin-top:16px">
+      <div class="deliverable-head">📤 What Pair 1 Delivers to Other Pairs</div>
+      <div class="deliverable-row"><div class="del-col">→ All Pairs</div><div class="del-col">Confirmed 4 business issues + 5 SMART objectives (foundation of every section)</div></div>
+      <div class="deliverable-row"><div class="del-col">→ Pair 5</div><div class="del-col">CAGR figure + projected 2030 market size (for conclusion industry outlook)</div></div>
+      <div class="deliverable-row"><div class="del-col">← Receives</div><div class="del-col">Section summaries from Pairs 2–4 (to keep intro consistent with final content)</div></div>
+    </div>
+  </div>
+
+  <!-- ── PAIR 2 ── -->
+  <div id="guide-2" class="pair-guide">
+    <div class="guide-header" style="background:var(--navy-mid)">
+      <div class="guide-header-eyebrow">Pair 2 · Sections 3 &amp; 4</div>
+      <h3>Competitive Positioning &amp; Tactical Initiatives</h3>
+      <div class="guide-members">Precious Osato Uchenna &amp; Benedicta Hanson-Greene</div>
+      <div class="guide-meta-row">
+        <div class="guide-meta-item">📄 ~2.5 pages total</div>
+        <div class="guide-meta-item">💰 Gross Margin formula</div>
+        <div class="guide-meta-item">📤 Delivers to: Pairs 3, 4, 5</div>
+        <div class="guide-meta-item">⚠️ Send pricing table to Pairs 3 &amp; 4 first</div>
+      </div>
+    </div>
+
+    <div class="guide-grid">
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">①</div><h4>Step-by-Step Process</h4></div>
+        <div class="guide-card-body">
+          <ol class="step-list">
+            <li class="step-item"><div class="step-num">1</div><div class="step-text">Use the <strong>VRIO framework</strong> from Report 1 to identify Visser's 4 competitive pillars: RHFAC Certification, Lived Experience, Garden Cart (physical product), Community Garden Focus.</div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-text">Research <strong>Meaningful Access Consulting</strong> and <strong>Sawchuk Accessible Solutions</strong> websites to identify their gaps vs. Visser's advantages. Build the 4-column pillar table.</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-text">Write one-sentence positioning statement that guides the tone of all 8 tactical initiatives.</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-text">Research comparable adaptive product pricing on Amazon.ca, Lee Valley, and Rehabmart.com. Your target sell price range is <strong>$600–$1,000 CAD</strong>.</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-text">Build three pricing scenarios (Conservative / Recommended / Premium) using $350 CAD as the base production cost from the Client Meeting Summary.</div></li>
+            <li class="step-item"><div class="step-num">6</div><div class="step-text">Benchmark: specialty assistive products carry <strong>40%–60% gross margins</strong>. If your Recommended scenario falls below 35%, raise the price.</div></li>
+            <li class="step-item"><div class="step-num">7</div><div class="step-text"><strong>Share the Recommended Gross Profit per unit immediately</strong> with Pairs 3 and 4 — they need it to calculate break-even and KPIs.</div></li>
+            <li class="step-item"><div class="step-num">8</div><div class="step-text">Write all 8 tactical initiatives (4.1–4.8), each linking to a PESTEL factor or Five Forces finding from Report 1.</div></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">🔗</div><h4>Data Sources &amp; URLs</h4></div>
+        <div class="guide-card-body">
+          <ul class="source-list">
+            <li class="source-item">
+              <div class="source-icon">AMZ</div>
+              <div class="source-info">
+                <div class="source-name">Amazon.ca</div>
+                <div class="source-url">amazon.ca</div>
+                <div class="source-desc">Search "adaptive gardening tools" — comparable product pricing</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">LEE</div>
+              <div class="source-info">
+                <div class="source-name">Lee Valley Tools</div>
+                <div class="source-url">leevalley.com</div>
+                <div class="source-desc">Premium Canadian garden tool pricing benchmarks</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">RHB</div>
+              <div class="source-info">
+                <div class="source-name">Rehabmart</div>
+                <div class="source-url">rehabmart.com</div>
+                <div class="source-desc">Assistive/adaptive product pricing — direct comparables</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">BDC</div>
+              <div class="source-info">
+                <div class="source-name">BDC (Business Dev. Bank)</div>
+                <div class="source-url">bdc.ca</div>
+                <div class="source-desc">Gross margin benchmarks for specialty products</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">R1</div>
+              <div class="source-info">
+                <div class="source-name">Report 1 — VRIO, Five Forces, PESTEL</div>
+                <div class="source-url">Prior report — internal</div>
+                <div class="source-desc">Competitive analysis and Porter's Five Forces Buyer Power section</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-card-head"><div class="guide-card-icon">∑</div><h4>Pricing Formulas &amp; Scenario Table</h4></div>
+      <div class="guide-card-body">
+        <div class="guide-grid" style="gap:12px">
+          <div class="formula-box">
+            <div class="formula-label">Gross Profit</div>
+            <div class="formula-expr">Gross Profit = Selling Price − Production Cost</div>
+          </div>
+          <div class="formula-box">
+            <div class="formula-label">Gross Margin %</div>
+            <div class="formula-expr">Margin % = (Gross Profit ÷ Selling Price) × 100</div>
+          </div>
+        </div>
+        <table class="scenario-table">
+          <thead><tr><th>Scenario</th><th>Production Cost</th><th>Selling Price</th><th>Gross Profit</th><th>Margin %</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Conservative</td><td>$400 CAD</td><td>$650 CAD</td><td>$250</td><td>38.5%</td><td><span class="warn-pill">Below ideal</span></td></tr>
+            <tr class="scenario-table .td-recrow"><td><strong>Recommended ★</strong></td><td style="background:var(--gold-pale)">$380 CAD</td><td style="background:var(--gold-pale)"><strong>$750 CAD</strong></td><td style="background:var(--gold-pale)"><strong>$370</strong></td><td style="background:var(--gold-pale)"><strong>49.3%</strong></td><td style="background:var(--gold-pale)"><span class="benchmark-pill">✓ Target range</span></td></tr>
+            <tr><td>Premium</td><td>$350 CAD</td><td>$950 CAD</td><td>$600</td><td>63.2%</td><td><span class="benchmark-pill">✓ Strong</span></td></tr>
+          </tbody>
+        </table>
+        <div class="example-box" style="margin-top:12px">
+          <div class="example-label">Write this sentence</div>
+          <div class="example-text"><em>"To achieve a sustainable gross margin, a minimum selling price of [$X] per unit is recommended, yielding a [X%] gross margin consistent with specialty assistive product benchmarks (BDC, 2024)."</em></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="deliverable-box" style="margin-top:16px">
+      <div class="deliverable-head">📤 What Pair 2 Delivers</div>
+      <div class="deliverable-row"><div class="del-col">→ Pair 3</div><div class="del-col">Recommended selling price + Gross Profit per unit ($370 or your researched figure)</div></div>
+      <div class="deliverable-row"><div class="del-col">→ Pair 4</div><div class="del-col">Same pricing table — needed for revenue projections and KPI calculations</div></div>
+      <div class="deliverable-row"><div class="del-col">→ Pair 5</div><div class="del-col">Pricing table — needed for financial risk exposure evaluation</div></div>
+    </div>
+  </div>
+
+  <!-- ── PAIR 3 ── -->
+  <div id="guide-3" class="pair-guide">
+    <div class="guide-header" style="background:linear-gradient(135deg,#1B3A0F 0%,#2A5C0A 100%)">
+      <div class="guide-header-eyebrow">Pair 3 · Sections 5 &amp; 6</div>
+      <h3>Timeline, Milestones &amp; Resource Allocation</h3>
+      <div class="guide-members">Paulina Osorio Ambriz &amp; Jiulang Sang</div>
+      <div class="guide-meta-row">
+        <div class="guide-meta-item">📄 ~2 pages total</div>
+        <div class="guide-meta-item">💰 Break-Even formula</div>
+        <div class="guide-meta-item">📥 Needs: Pair 2 pricing first</div>
+        <div class="guide-meta-item">📤 Delivers to: Pairs 4 &amp; 5</div>
+      </div>
+    </div>
+
+    <div class="guide-grid">
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">①</div><h4>Step-by-Step Process</h4></div>
+        <div class="guide-card-body">
+          <ol class="step-list">
+            <li class="step-item"><div class="step-num">1</div><div class="step-text"><strong>Wait for Pair 2's Gross Profit per unit</strong> before finalizing numbers. Use their Recommended scenario figure (~$370 provisional).</div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-text">Estimate startup costs line by line using the sources below. Do not guess — each cost category has a specific research source.</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-text">Add all cost lines + 10% contingency = <strong>Total Fixed Costs</strong>.</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-text">Apply break-even formula. Check: is the resulting unit count achievable in 6–18 months given the market segments in Reports 1 &amp; 2?</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-text">Build the 3-phase timeline table (Short 0–6mo / Mid 6–18mo / Long 18–36mo). Sequence logically for a part-time founder.</div></li>
+            <li class="step-item"><div class="step-num">6</div><div class="step-text">Build the resource allocation table and budget breakdown. All figures in CAD. Justify using BDC benchmarks.</div></li>
+            <li class="step-item"><div class="step-num">7</div><div class="step-text">Write the 3–4 sentence financial sustainability narrative: irregular → stable revenue, tipping point, Year 3 health.</div></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">🔗</div><h4>Data Sources &amp; URLs</h4></div>
+        <div class="guide-card-body">
+          <ul class="source-list">
+            <li class="source-item">
+              <div class="source-icon">CIPO</div>
+              <div class="source-info">
+                <div class="source-name">CIPO Fee Schedule</div>
+                <div class="source-url">cipo.ic.gc.ca → Fee Schedule → Small Entity</div>
+                <div class="source-desc">Patent filing cost ~$450 CAD (small entity rate)</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">BDC</div>
+              <div class="source-info">
+                <div class="source-name">BDC Startup Guides</div>
+                <div class="source-url">bdc.ca/en/articles-tools/start-buy-business</div>
+                <div class="source-desc">Prototype costs $3,000–$6,000 · Marketing $3,000–$5,000</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">HSP</div>
+              <div class="source-info">
+                <div class="source-name">HubSpot CRM Pricing</div>
+                <div class="source-url">hubspot.com/pricing</div>
+                <div class="source-desc">CRM ~$500/year (Starter plan)</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">ZHO</div>
+              <div class="source-info">
+                <div class="source-name">Zoho CRM</div>
+                <div class="source-url">zoho.com/crm/zohocrm-pricing.html</div>
+                <div class="source-desc">Alternative CRM — compare pricing</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">CMA</div>
+              <div class="source-info">
+                <div class="source-name">Canadian Marketing Association</div>
+                <div class="source-url">the-cma.org</div>
+                <div class="source-desc">Canadian digital marketing cost benchmarks</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-card-head"><div class="guide-card-icon">∑</div><h4>Break-Even Formula &amp; Startup Cost Table</h4></div>
+      <div class="guide-card-body">
+        <div class="formula-box">
+          <div class="formula-label">Break-Even Formula</div>
+          <div class="formula-expr">Break-Even Units = Total Fixed Costs ÷ Gross Profit per Unit</div>
+          <div class="formula-note">Get Gross Profit per unit from Pair 2 — do not proceed without it</div>
+        </div>
+        <div style="margin-top:14px">
+          <table class="scenario-table">
+            <thead><tr><th>Cost Item</th><th>How to Find It</th><th>Realistic Estimate</th></tr></thead>
+            <tbody>
+              <tr><td>Prototype Finalization</td><td>BDC.ca startup guides</td><td>$3,000–$6,000</td></tr>
+              <tr><td>CIPO Patent Filing</td><td>cipo.ic.gc.ca → Fee Schedule</td><td>~$450</td></tr>
+              <tr><td>Digital Marketing</td><td>BDC.ca / CMA benchmarks</td><td>$3,000–$5,000</td></tr>
+              <tr><td>CRM Software (Year 1)</td><td>hubspot.com/pricing</td><td>~$500</td></tr>
+              <tr><td>Trade Shows &amp; Events</td><td>NS accessibility events / RHF</td><td>$1,000–$2,000</td></tr>
+              <tr><td>Contingency (10%)</td><td>Standard startup practice</td><td>Calculate last</td></tr>
+              <tr style="font-weight:600"><td><strong>Total Fixed Costs</strong></td><td></td><td>~$8,200–$14,000+</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="example-box" style="margin-top:12px">
+          <div class="example-label">Example Calculation (using Recommended Gross Profit ~$370)</div>
+          <div class="example-text">
+            Total Fixed Costs (est.) = <em>$10,000 CAD</em><br>
+            Gross Profit per unit = <em>$370 CAD</em> (from Pair 2)<br>
+            Break-even = $10,000 ÷ $370 = <em>~27 Garden Carts</em><br><br>
+            Write: <em>"Visser must sell a minimum of [27] Garden Carts to recover startup costs of [$10,000], a target achievable within [12–18] months given identified community garden and municipal market segments."</em>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="deliverable-box" style="margin-top:16px">
+      <div class="deliverable-head">📤 What Pair 3 Delivers</div>
+      <div class="deliverable-row"><div class="del-col">→ Pair 4</div><div class="del-col">Total Fixed Costs + Break-Even units + Total Marketing Budget (for CAC calculation)</div></div>
+      <div class="deliverable-row"><div class="del-col">→ Pair 5</div><div class="del-col">Break-even figures + financial sustainability narrative (for financial risk assessment)</div></div>
+    </div>
+  </div>
+
+  <!-- ── PAIR 4 ── -->
+  <div id="guide-4" class="pair-guide">
+    <div class="guide-header" style="background:linear-gradient(135deg,#1A1A18 0%,#333330 100%)">
+      <div class="guide-header-eyebrow">Pair 4 · Sections 7 &amp; 8</div>
+      <h3>RACI Matrix &amp; Key Performance Indicators</h3>
+      <div class="guide-members">Muhammad Hamza Rajput &amp; Sonia Singh</div>
+      <div class="guide-meta-row">
+        <div class="guide-meta-item">📄 ~2.5 pages total</div>
+        <div class="guide-meta-item">💰 CAC + CLV formulas</div>
+        <div class="guide-meta-item">📥 Needs: Pairs 2 &amp; 3 first</div>
+        <div class="guide-meta-item">📤 Delivers to: Pairs 3 &amp; 5</div>
+      </div>
+    </div>
+
+    <div class="guide-grid">
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">①</div><h4>Step-by-Step Process</h4></div>
+        <div class="guide-card-body">
+          <ol class="step-list">
+            <li class="step-item"><div class="step-num">1</div><div class="step-text">Build the RACI matrix first. Assign R/A/C/I roles for all 7 initiatives across Marcel (Founder), RHFAC Consultant (future), Business Admin (future), and External Contractors.</div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Get the Marketing Budget from Pair 3</strong> (~$4,000 CAD). This is the input for CAC.</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-text">Use 5–8 clients as Year 1 target (from Report 2 objectives). CAC = Marketing Budget ÷ Year 1 clients.</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-text">RHFAC consulting rates in Atlantic Canada = $2,000–$5,000 per engagement. Use $3,000 mid-estimate × 2 repeat engagements = CLV of $6,000.</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-text">Calculate CLV:CAC ratio. Target: <strong>3:1 or higher</strong>. If below 3, reduce target CAC by adjusting marketing spend or client target.</div></li>
+            <li class="step-item"><div class="step-num">6</div><div class="step-text">Build the 3-year revenue projection table using Pair 2's Recommended cart price and your consulting client ramp-up.</div></li>
+            <li class="step-item"><div class="step-num">7</div><div class="step-text">Define all 11 KPIs with baseline values (often $0 or 0%), target values, and measurement methods.</div></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">🔗</div><h4>Data Sources &amp; URLs</h4></div>
+        <div class="guide-card-body">
+          <ul class="source-list">
+            <li class="source-item">
+              <div class="source-icon">HSP</div>
+              <div class="source-info">
+                <div class="source-name">HubSpot Marketing Stats</div>
+                <div class="source-url">hubspot.com/marketing-statistics</div>
+                <div class="source-desc">CAC benchmarks and CLV:CAC ratio standards</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">GAN</div>
+              <div class="source-info">
+                <div class="source-name">Google Analytics Benchmarks</div>
+                <div class="source-url">analytics.google.com</div>
+                <div class="source-desc">CTR and campaign metrics baselines</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">ACO</div>
+              <div class="source-info">
+                <div class="source-name">ACOA (Atlantic Canada)</div>
+                <div class="source-url">acoa-apeca.gc.ca</div>
+                <div class="source-desc">Atlantic Canada startup benchmarks + funding programs</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">STC</div>
+              <div class="source-info">
+                <div class="source-name">Statistics Canada</div>
+                <div class="source-url">statcan.gc.ca</div>
+                <div class="source-desc">NS market size data for market share KPI baseline</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">R2</div>
+              <div class="source-info">
+                <div class="source-name">Report 2 — Organizational Capacity</div>
+                <div class="source-url">Prior report — internal</div>
+                <div class="source-desc">Client targets and ecosystem analysis</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-card-head"><div class="guide-card-icon">∑</div><h4>CAC, CLV &amp; Revenue Projection Formulas</h4></div>
+      <div class="guide-card-body">
+        <div class="guide-grid" style="gap:12px">
+          <div class="formula-box">
+            <div class="formula-label">Customer Acquisition Cost (CAC)</div>
+            <div class="formula-expr">CAC = Total Marketing Budget ÷ New Clients Targeted</div>
+            <div class="formula-note">Example: $4,000 ÷ 6 clients = $667 CAC</div>
+          </div>
+          <div class="formula-box">
+            <div class="formula-label">Customer Lifetime Value (CLV)</div>
+            <div class="formula-expr">CLV = Avg. Engagement Value × Avg. Engagements per Client</div>
+            <div class="formula-note">Example: $3,000 × 2 repeat engagements = $6,000 CLV</div>
+          </div>
+        </div>
+        <div class="formula-box" style="margin-top:12px">
+          <div class="formula-label">CLV:CAC Ratio (benchmark: 3:1 or higher)</div>
+          <div class="formula-expr">Ratio = CLV ÷ CAC → Example: $6,000 ÷ $667 = 9:1 ✓</div>
+          <div class="formula-note">A 9:1 ratio indicates highly efficient marketing spend relative to client value</div>
+        </div>
+        <div class="example-box" style="margin-top:12px">
+          <div class="example-label">Revenue Projection Table (fill in with your figures)</div>
+          <table class="scenario-table" style="margin-top:8px">
+            <thead><tr><th>Year</th><th>Consulting Clients</th><th>Avg. Revenue/Client</th><th>Carts Sold</th><th>Revenue/Cart</th><th>Total Revenue</th></tr></thead>
+            <tbody>
+              <tr><td>Year 1</td><td>6</td><td>$3,000</td><td>8</td><td>[Pair 2 price]</td><td>[Calculate]</td></tr>
+              <tr><td>Year 2</td><td>12</td><td>$3,500</td><td>20</td><td>[Pair 2 price]</td><td>[Calculate]</td></tr>
+              <tr><td>Year 3</td><td>20</td><td>$4,000</td><td>40</td><td>[Pair 2 price]</td><td>[Calculate]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="deliverable-box" style="margin-top:16px">
+      <div class="deliverable-head">📤 What Pair 4 Delivers</div>
+      <div class="deliverable-row"><div class="del-col">→ Pair 3</div><div class="del-col">Final KPI targets (for financial sustainability narrative alignment)</div></div>
+      <div class="deliverable-row"><div class="del-col">→ Pair 5</div><div class="del-col">Final KPI targets + revenue projection totals (for risk evaluation benchmarks)</div></div>
+    </div>
+  </div>
+
+  <!-- ── PAIR 5 ── -->
+  <div id="guide-5" class="pair-guide">
+    <div class="guide-header" style="background:linear-gradient(135deg,#3A0808 0%,#6B1818 100%)">
+      <div class="guide-header-eyebrow">Pair 5 · Sections 9 &amp; 10 + Integration Lead</div>
+      <h3>Risk Mitigation, Conclusion &amp; Final Integration</h3>
+      <div class="guide-members">Ujjwal Jyoti &amp; Xiaowei Zhu</div>
+      <div class="guide-meta-row">
+        <div class="guide-meta-item">📄 ~2 pages + integration check</div>
+        <div class="guide-meta-item">⚠️ Risk Score formula</div>
+        <div class="guide-meta-item">📥 Needs: All pairs' outputs</div>
+        <div class="guide-meta-item">🔑 Final integration verifier</div>
+      </div>
+    </div>
+
+    <div class="guide-grid">
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">①</div><h4>Step-by-Step Process</h4></div>
+        <div class="guide-card-body">
+          <ol class="step-list">
+            <li class="step-item"><div class="step-num">1</div><div class="step-text">Collect outputs from all pairs: CAGR (P1), pricing table (P2), break-even + marketing budget (P3), KPI targets + revenue totals (P4).</div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-text">Identify 10 risks covering all categories listed in the risk table below. Pull from Report 1 Issue Impact Matrix, PESTEL, and Five Forces.</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-text">Score each risk on Likelihood (1–5) and Impact (1–5). Multiply for Risk Score. Sum all 10 for Cumulative Risk Score.</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-text">Write a mitigation strategy and contingency action for each risk. High-priority risks (15+) need immediate-action language.</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-text">Write the Conclusion: Paragraph 1 = synthesis of all sections. Paragraph 2 = forward-looking with first-mover advantage, Accessible Canada Act, and 2030 market growth. No new ideas.</div></li>
+            <li class="step-item"><div class="step-num">6</div><div class="step-text">Run the <strong>Final Integration Verification</strong>: complete the Section Quality Self-Check Tracker for all pairs before submission.</div></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-card-head"><div class="guide-card-icon">🔗</div><h4>Data Sources &amp; URLs</h4></div>
+        <div class="guide-card-body">
+          <ul class="source-list">
+            <li class="source-item">
+              <div class="source-icon">ISO</div>
+              <div class="source-info">
+                <div class="source-name">ISO 31000 Risk Management</div>
+                <div class="source-url">iso.org/iso-31000-risk-management</div>
+                <div class="source-desc">International risk management framework — cite this for methodology</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">ACA</div>
+              <div class="source-info">
+                <div class="source-name">Accessible Canada Act</div>
+                <div class="source-url">laws-lois.justice.gc.ca</div>
+                <div class="source-desc">Regulatory environment risk + opportunity analysis</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">GVR</div>
+              <div class="source-info">
+                <div class="source-name">Grand View Research</div>
+                <div class="source-url">grandviewresearch.com</div>
+                <div class="source-desc">2030 market growth figures for Conclusion paragraph 2</div>
+              </div>
+            </li>
+            <li class="source-item">
+              <div class="source-icon">R1</div>
+              <div class="source-info">
+                <div class="source-name">Report 1 — Issue Impact Matrix + SWOT</div>
+                <div class="source-url">Prior report — internal</div>
+                <div class="source-desc">Source of primary risk identification inputs</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-card-head"><div class="guide-card-icon">∑</div><h4>Risk Scoring Formula &amp; 10 Risk Categories</h4></div>
+      <div class="guide-card-body">
+        <div class="formula-box">
+          <div class="formula-label">Risk Score Formula</div>
+          <div class="formula-expr">Risk Score = Likelihood (1–5) × Impact (1–5) · Maximum = 25</div>
+          <div class="formula-note">15–25 = High Priority (immediate action) · 8–14 = Moderate · 1–7 = Low</div>
+        </div>
+        <table class="risk-table" style="margin-top:14px">
+          <thead><tr><th>#</th><th>Risk Category</th><th>Expected Priority</th><th>Score Range</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Founder dependency / key-person risk</td><td class="risk-high">High</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:85%;background:var(--danger)"></div></div></td></tr>
+            <tr><td>2</td><td>IP theft — Garden Cart design</td><td class="risk-high">High</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:80%;background:var(--danger)"></div></div></td></tr>
+            <tr><td>3</td><td>Manufacturing delay / no partner found</td><td class="risk-high">High</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:75%;background:var(--danger)"></div></div></td></tr>
+            <tr><td>4</td><td>Market validation failure</td><td class="risk-mod">Moderate–High</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:65%;background:var(--warn)"></div></div></td></tr>
+            <tr><td>5</td><td>Cash flow / funding gap</td><td class="risk-high">High</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:80%;background:var(--danger)"></div></div></td></tr>
+            <tr><td>6</td><td>Regulatory change — Accessible Canada Act</td><td class="risk-mod">Moderate</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:45%;background:var(--warn)"></div></div></td></tr>
+            <tr><td>7</td><td>Digital marketing underperformance</td><td class="risk-mod">Moderate</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:48%;background:var(--warn)"></div></div></td></tr>
+            <tr><td>8</td><td>Competitor replication of Garden Cart</td><td class="risk-mod">Moderate–High</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:62%;background:var(--warn)"></div></div></td></tr>
+            <tr><td>9</td><td>Hiring failure — no RHFAC consultant</td><td class="risk-mod">Moderate</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:40%;background:var(--warn)"></div></div></td></tr>
+            <tr><td>10</td><td>CRM / technology not implemented</td><td class="risk-low">Low–Moderate</td><td><div class="risk-score-bar"><div class="risk-score-fill" style="width:28%;background:var(--success)"></div></div></td></tr>
+          </tbody>
+        </table>
+        <div class="example-box" style="margin-top:12px">
+          <div class="example-label">Write this closing sentence</div>
+          <div class="example-text"><em>"The cumulative risk exposure score of [X] indicates a high-risk operating environment typical of early-stage commercialization. Of the 10 identified risks, [X] fall in the high-priority category requiring immediate mitigation action (ISO 31000, 2018)."</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tab-guides -->
+
+
+<!-- ══════════════════════════════════════
+     TAB 3 · FORMULA REFERENCE
+══════════════════════════════════════ -->
+<div id="tab-formulas" class="tab-panel">
+  <div class="sec-head">
+    <h2>Financial Formula Reference</h2>
+    <p>Complete explanations of every formula required in Report 3, with concepts, examples, and common mistakes to avoid.</p>
+  </div>
+
+  <div class="formula-ref-grid">
+
+    <div class="fref-card">
+      <div class="fref-head">
+        <div class="fref-icon" style="background:#EBF4FD;color:#1A5FA3">%</div>
+        <div class="fref-head-text">
+          <h3>CAGR — Compound Annual Growth Rate</h3>
+          <p>Projects how fast a market grows year over year at a constant rate</p>
+        </div>
+      </div>
+      <div class="fref-body">
+        <div class="fref-who"><span class="badge b1">Used by Pair 1</span> · Section 2 market size projection</div>
+        <div class="formula-box">
+          <div class="formula-label">Formula</div>
+          <div class="formula-expr">FV = PV × (1 + CAGR)^n</div>
+          <div class="formula-note">FV = Future Value · PV = Present Value · n = number of years</div>
+        </div>
+        <div class="concept-block" style="margin-top:16px">
+          <div class="concept-term">What CAGR means</div>
+          <div class="concept-def">CAGR represents the <strong>smooth annual rate</strong> at which something would have to grow to go from its starting value to its ending value. It ignores year-to-year volatility — it's a clean average growth rate for projection purposes.</div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-term">Example walkthrough</div>
+          <div class="concept-def">
+            Market today (2024): <strong>$2.1M CAD</strong><br>
+            CAGR assumed: <strong>5%</strong> · Years: <strong>6</strong> (to 2030)<br>
+            $2.1M × (1.05)^6 = $2.1M × 1.3401 = <strong>~$2.81M CAD by 2030</strong>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-term">Common mistakes</div>
+          <div class="concept-def">
+            ❌ Forgetting to convert to Canada-specific figures first<br>
+            ❌ Using the CAGR as a percentage without the formula<br>
+            ✅ Always state assumptions clearly if exact data is unavailable
+          </div>
+        </div>
+        <div class="benchmark-pill">✓ Use 4.5%–6% CAGR if segment data unavailable (state as assumption)</div>
+      </div>
+    </div>
+
+    <div class="fref-card">
+      <div class="fref-head">
+        <div class="fref-icon" style="background:var(--gold-pale);color:var(--gold)">$</div>
+        <div class="fref-head-text">
+          <h3>Gross Profit &amp; Gross Margin %</h3>
+          <p>Measures profitability at the product level before operating costs</p>
+        </div>
+      </div>
+      <div class="fref-body">
+        <div class="fref-who"><span class="badge b2">Used by Pair 2</span> · Section 4.3 pricing strategy</div>
+        <div class="formula-box">
+          <div class="formula-label">Gross Profit</div>
+          <div class="formula-expr">Gross Profit = Selling Price − Production Cost</div>
+        </div>
+        <div class="formula-box" style="margin-top:10px">
+          <div class="formula-label">Gross Margin %</div>
+          <div class="formula-expr">Margin % = (Gross Profit ÷ Selling Price) × 100</div>
+        </div>
+        <div class="concept-block" style="margin-top:14px">
+          <div class="concept-term">Gross Profit vs. Net Profit</div>
+          <div class="concept-def"><strong>Gross Profit</strong> = revenue minus only the direct cost to make the product. <strong>Net Profit</strong> subtracts all operating costs (rent, salaries, marketing). Gross Margin tells you if the product pricing is viable before overhead.</div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-term">Example</div>
+          <div class="concept-def">Sell price: $750 · Production cost: $380<br>Gross Profit = $750 − $380 = <strong>$370</strong><br>Margin % = ($370 ÷ $750) × 100 = <strong>49.3%</strong></div>
+        </div>
+        <div class="benchmark-pill">✓ Specialty assistive products benchmark: 40%–60% margin</div>
+        <div class="warn-pill" style="margin-left:8px">⚠ Below 35% = raise price or reduce cost</div>
+      </div>
+    </div>
+
+    <div class="fref-card">
+      <div class="fref-head">
+        <div class="fref-icon" style="background:var(--p3-bg);color:var(--p3)">↑</div>
+        <div class="fref-head-text">
+          <h3>Break-Even Analysis</h3>
+          <p>The point at which total revenues equal total costs — zero profit, zero loss</p>
+        </div>
+      </div>
+      <div class="fref-body">
+        <div class="fref-who"><span class="badge b3">Used by Pair 3</span> · Section 5 timeline &amp; milestones</div>
+        <div class="formula-box">
+          <div class="formula-label">Break-Even Units</div>
+          <div class="formula-expr">Break-Even = Fixed Costs ÷ Gross Profit per Unit</div>
+        </div>
+        <div class="concept-block" style="margin-top:14px">
+          <div class="concept-term">Fixed costs vs. variable costs</div>
+          <div class="concept-def"><strong>Fixed costs</strong> are paid regardless of how many units are sold (patent filing, CRM, marketing setup). <strong>Variable costs</strong> change per unit (production materials). Break-even uses fixed costs only.</div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-term">Example</div>
+          <div class="concept-def">Fixed costs = <strong>$10,000 CAD</strong><br>Gross Profit per unit = <strong>$370</strong> (from Pair 2)<br>Break-even = $10,000 ÷ $370 = <strong>~27 units</strong></div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-term">Feasibility check</div>
+          <div class="concept-def">Ask: can Visser sell 27 Garden Carts within 12–18 months? Given community gardens + municipal targets identified in Report 1, this should be feasible — state why in the text.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fref-card">
+      <div class="fref-head">
+        <div class="fref-icon" style="background:var(--p4-bg);color:var(--p4)">⊕</div>
+        <div class="fref-head-text">
+          <h3>CAC &amp; CLV — Customer Economics</h3>
+          <p>Cost to acquire one customer vs. total value that customer generates</p>
+        </div>
+      </div>
+      <div class="fref-body">
+        <div class="fref-who"><span class="badge b4">Used by Pair 4</span> · Section 8 KPIs</div>
+        <div class="formula-box">
+          <div class="formula-label">Customer Acquisition Cost (CAC)</div>
+          <div class="formula-expr">CAC = Total Marketing Budget ÷ New Clients Targeted</div>
+          <div class="formula-note">Example: $4,000 ÷ 6 = $667 CAC per client</div>
+        </div>
+        <div class="formula-box" style="margin-top:10px">
+          <div class="formula-label">Customer Lifetime Value (CLV)</div>
+          <div class="formula-expr">CLV = Avg. Engagement Value × Avg. Engagements per Client</div>
+          <div class="formula-note">Example: $3,000 × 2 repeat engagements = $6,000 CLV</div>
+        </div>
+        <div class="formula-box" style="margin-top:10px">
+          <div class="formula-label">CLV:CAC Ratio (efficiency indicator)</div>
+          <div class="formula-expr">Ratio = CLV ÷ CAC → healthy: 3:1 or higher</div>
+          <div class="formula-note">Example: $6,000 ÷ $667 = 9:1 — highly efficient</div>
+        </div>
+        <div class="concept-block" style="margin-top:14px">
+          <div class="concept-term">Why CLV:CAC matters</div>
+          <div class="concept-def">A ratio below 1 means you spend more acquiring a client than they generate — unsustainable. <strong>3:1</strong> is the minimum healthy threshold. <strong>9:1</strong> means the business model is efficient — every dollar of marketing returns $9 in client value.</div>
+        </div>
+        <div class="benchmark-pill">✓ Healthy service business benchmark: CLV:CAC ≥ 3:1</div>
+      </div>
+    </div>
+
+    <div class="fref-card" style="grid-column: 1 / -1">
+      <div class="fref-head">
+        <div class="fref-icon" style="background:var(--p5-bg);color:var(--p5)">⚠</div>
+        <div class="fref-head-text">
+          <h3>Risk Score Matrix — Likelihood × Impact</h3>
+          <p>Quantifies risk severity to prioritize mitigation actions — based on ISO 31000</p>
+        </div>
+      </div>
+      <div class="fref-body">
+        <div class="fref-who"><span class="badge b5">Used by Pair 5</span> · Section 9 risk mitigation</div>
+        <div class="guide-grid" style="gap:12px">
+          <div>
+            <div class="formula-box">
+              <div class="formula-label">Risk Score Formula</div>
+              <div class="formula-expr">Risk Score = Likelihood (1–5) × Impact (1–5)</div>
+              <div class="formula-note">Maximum score = 25 · Minimum = 1 · Sum all 10 for Cumulative Score</div>
+            </div>
+            <div class="concept-block" style="margin-top:14px">
+              <div class="concept-term">Likelihood scale (1–5)</div>
+              <div class="concept-def">
+                1 = Rare (almost impossible) · 2 = Unlikely · 3 = Possible<br>
+                4 = Likely · 5 = Almost Certain
+              </div>
+            </div>
+            <div class="concept-block">
+              <div class="concept-term">Impact scale (1–5)</div>
+              <div class="concept-def">
+                1 = Negligible · 2 = Minor · 3 = Moderate<br>
+                4 = Major (threatens objectives) · 5 = Catastrophic (threatens survival)
+              </div>
+            </div>
+          </div>
+          <div>
+            <table class="risk-table">
+              <thead><tr><th>Score Range</th><th>Priority</th><th>Required Response</th></tr></thead>
+              <tbody>
+                <tr><td><strong>15–25</strong></td><td class="risk-high">High</td><td>Immediate mitigation action required</td></tr>
+                <tr><td><strong>8–14</strong></td><td class="risk-mod">Moderate</td><td>Active monitoring + contingency plan</td></tr>
+                <tr><td><strong>1–7</strong></td><td class="risk-low">Low</td><td>Periodic review sufficient</td></tr>
+              </tbody>
+            </table>
+            <div class="concept-block" style="margin-top:14px">
+              <div class="concept-term">Example scoring</div>
+              <div class="concept-def">
+                Founder dependency: Likelihood = 5 (almost certain if Marcel is sick) × Impact = 5 (catastrophic — no one else can deliver) = <strong>Score: 25 (High)</strong>
+              </div>
+            </div>
+            <div class="concept-block">
+              <div class="concept-term">Cumulative score interpretation</div>
+              <div class="concept-def">Add all 10 risk scores. A total near or above <strong>100</strong> indicates a high-risk environment — typical of early-stage startups. Use this to frame the opening sentence of Section 9.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /tab-formulas -->
+
+
+<!-- ══════════════════════════════════════
+     TAB 4 · INTERDEPENDENCIES
+══════════════════════════════════════ -->
+<div id="tab-deps" class="tab-panel">
+  <div class="sec-head">
+    <h2>Cross-Pair Interdependencies</h2>
+    <p>Every pair depends on outputs from other pairs. This table defines exactly what is delivered, to whom, and why it must arrive before that section can be finalized.</p>
+  </div>
+
+  <div class="dep-table-wrap">
+    <table class="dep-table">
+      <thead>
+        <tr><th>From</th><th></th><th>Delivers To</th><th>What Is Delivered</th><th>Required Because</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge b1">Pair 1</span></td>
+          <td class="dep-arr">→</td>
+          <td><span class="badge ball">All Pairs</span></td>
+          <td class="td-s">4 Business Issues + 5 SMART Objectives</td>
+          <td>Strategic foundation — every section links back to these</td>
+        </tr>
+        <tr>
+          <td><span class="badge b1">Pair 1</span></td>
+          <td class="dep-arr">→</td>
+          <td><span class="badge b5">Pair 5</span></td>
+          <td class="td-s">CAGR figure &amp; projected 2030 market size</td>
+          <td>Conclusion needs the market growth figure for forward-looking paragraph</td>
+        </tr>
+        <tr>
+          <td><span class="badge b2">Pair 2</span></td>
+          <td class="dep-arr">→</td>
+          <td><span class="badge b3">Pair 3</span></td>
+          <td class="td-s">Recommended selling price + Gross Profit per unit</td>
+          <td>Break-even formula cannot be applied without Gross Profit per unit</td>
+        </tr>
+        <tr>
+          <td><span class="badge b2">Pair 2</span></td>
+          <td class="dep-arr">→</td>
+          <td><div class="badge-group"><span class="badge b4">Pair 4</span><span class="badge b5">Pair 5</span></div></td>
+          <td class="td-s">Full pricing strategy table (3 scenarios)</td>
+          <td>P4 needs selling price for revenue projections; P5 needs it for financial risk scoring</td>
+        </tr>
+        <tr>
+          <td><span class="badge b3">Pair 3</span></td>
+          <td class="dep-arr">→</td>
+          <td><span class="badge b4">Pair 4</span></td>
+          <td class="td-s">Total Fixed Costs + Break-Even units + Marketing Budget</td>
+          <td>CAC = Marketing Budget ÷ Clients — Pair 4 cannot calculate CAC without this number</td>
+        </tr>
+        <tr>
+          <td><span class="badge b3">Pair 3</span></td>
+          <td class="dep-arr">→</td>
+          <td><span class="badge b5">Pair 5</span></td>
+          <td class="td-s">Break-even figures + financial sustainability narrative</td>
+          <td>Financial risk assessment requires knowing the cash flow tipping point</td>
+        </tr>
+        <tr>
+          <td><span class="badge b4">Pair 4</span></td>
+          <td class="dep-arr">→</td>
+          <td><span class="badge b3">Pair 3</span></td>
+          <td class="td-s">Final KPI targets</td>
+          <td>Pair 3's financial narrative must align with the KPI performance targets</td>
+        </tr>
+        <tr>
+          <td><span class="badge b4">Pair 4</span></td>
+          <td class="dep-arr">→</td>
+          <td><span class="badge b5">Pair 5</span></td>
+          <td class="td-s">Final KPI targets + revenue projection totals</td>
+          <td>Risk evaluation benchmarks against realistic performance expectations</td>
+        </tr>
+        <tr>
+          <td><div class="badge-group"><span class="badge b2">Pair 2</span><span class="badge b3">Pair 3</span><span class="badge b4">Pair 4</span></div></td>
+          <td class="dep-arr">→</td>
+          <td><span class="badge b1">Pair 1</span></td>
+          <td class="td-s">Final section summaries</td>
+          <td>Introduction must be consistent with what the final report actually contains</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="data-flow-visual">
+    <div class="dflow-title">Data Flow Map</div>
+    <div class="dflow-sub">What each pair sends and what they depend on receiving</div>
+    <div class="dflow-cols">
+      <div class="dflow-pair">
+        <div class="dflow-pair-num">Pair 1</div>
+        <h4>Intro &amp; Strategic Objectives</h4>
+        <div class="dflow-sends">Sends →</div>
+        <div class="dflow-item">→ ALL: 4 issues + 5 objectives</div>
+        <div class="dflow-item">→ P5: CAGR + 2030 market size</div>
+        <div class="dflow-sends" style="margin-top:8px">Receives ←</div>
+        <div class="dflow-item">← P2,3,4: Final summaries</div>
+      </div>
+      <div class="dflow-pair">
+        <div class="dflow-pair-num">Pair 2</div>
+        <h4>Competitive &amp; Tactics</h4>
+        <div class="dflow-sends">Sends →</div>
+        <div class="dflow-item">→ P3: Recommended price + gross profit</div>
+        <div class="dflow-item">→ P4,5: Full pricing table</div>
+        <div class="dflow-sends" style="margin-top:8px">Receives ←</div>
+        <div class="dflow-item">← P1: Issues + objectives</div>
+      </div>
+      <div class="dflow-pair">
+        <div class="dflow-pair-num">Pair 3</div>
+        <h4>Timeline &amp; Resources</h4>
+        <div class="dflow-sends">Sends →</div>
+        <div class="dflow-item">→ P4: Fixed costs + mktg budget</div>
+        <div class="dflow-item">→ P5: Break-even + narrative</div>
+        <div class="dflow-sends" style="margin-top:8px">Receives ←</div>
+        <div class="dflow-item">← P2: Gross profit per unit</div>
+        <div class="dflow-item">← P4: KPI targets</div>
+      </div>
+      <div class="dflow-pair">
+        <div class="dflow-pair-num">Pair 4</div>
+        <h4>RACI &amp; KPIs</h4>
+        <div class="dflow-sends">Sends →</div>
+        <div class="dflow-item">→ P3: KPI targets</div>
+        <div class="dflow-item">→ P5: KPIs + revenue totals</div>
+        <div class="dflow-sends" style="margin-top:8px">Receives ←</div>
+        <div class="dflow-item">← P2: Pricing table</div>
+        <div class="dflow-item">← P3: Mktg budget + costs</div>
+      </div>
+      <div class="dflow-pair">
+        <div class="dflow-pair-num">Pair 5</div>
+        <h4>Risk &amp; Conclusion + Integration</h4>
+        <div class="dflow-sends">Sends →</div>
+        <div class="dflow-item">→ Final report integration check</div>
+        <div class="dflow-sends" style="margin-top:8px">Receives ←</div>
+        <div class="dflow-item">← P1: CAGR figure</div>
+        <div class="dflow-item">← P2: Pricing table</div>
+        <div class="dflow-item">← P3: Break-even + narrative</div>
+        <div class="dflow-item">← P4: KPI targets + revenue</div>
+      </div>
+    </div>
+  </div>
+</div><!-- /tab-deps -->
+
+
+<!-- ══════════════════════════════════════
+     TAB 5 · PROGRESS TRACKER
+══════════════════════════════════════ -->
+<div id="tab-tracker" class="tab-panel">
+  <div class="sec-head">
+    <h2>Pair Progress Tracker</h2>
+    <p>Track completion of your pair's checklist items. <strong>Progress is shared in real time</strong> — anyone who opens this link sees the same state. Changes sync instantly across all devices.</p>
+  </div>
+
+  <!-- Firebase Setup Guide (shown when not configured) -->
+  <div class="setup-panel" id="setup-panel">
+    <div class="setup-panel-eyebrow">⚙ One-time setup required</div>
+    <h3>Connect the Shared Tracker</h3>
+    <p>The progress tracker uses Firebase Realtime Database — a free Google service — so all team members see the same checkboxes no matter who opens the link. Setup takes about 5 minutes.</p>
+    <div class="setup-steps">
+      <div class="setup-step">
+        <div class="setup-step-num">1</div>
+        <h5>Create a Firebase project</h5>
+        <p>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → click "Add project" → enter any project name → disable Google Analytics → click Create.</p>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">2</div>
+        <h5>Add a Realtime Database</h5>
+        <p>In your project → left menu: Build → Realtime Database → Create Database → choose any region → select <strong>"Start in test mode"</strong> → Enable.</p>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">3</div>
+        <h5>Get your config</h5>
+        <p>Project Settings (gear icon) → General → scroll to "Your apps" → click the Web icon (&lt;/&gt;) → register app → copy the <code>firebaseConfig</code> object.</p>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">4</div>
+        <h5>Paste config into this file</h5>
+        <p>Open this HTML file in a text editor → find <code>FIREBASE_CONFIG</code> near the bottom → replace the empty values with your copied config → save → re-upload to GitHub.</p>
+      </div>
+    </div>
+    <div class="setup-rules-box">
+      <div class="setup-rules-icon">🔒</div>
+      <div class="setup-rules-text">
+        <h5>Database rules — keep test mode for now</h5>
+        <p>Test mode allows public read &amp; write for 30 days — perfect for a group project. After your deadline, you can lock the database down. If you need to extend test mode, go to Realtime Database → Rules and set both <code>.read</code> and <code>.write</code> to <code>true</code>.</p>
+      </div>
+    </div>
+    <p style="font-size:12.5px;color:rgba(255,255,255,0.45);margin-bottom:20px">The config below is a template — replace every quoted value with your own project's values.</p>
+    <div class="setup-code"><span class="c-cmt">// ── Find FIREBASE_CONFIG in the &lt;script&gt; near the bottom of this file ──</span>
+<span class="c-key">const</span> <span class="c-val">FIREBASE_CONFIG</span> = {
+  <span class="c-key">apiKey</span>:            <span class="c-str">"AIzaSy..."</span>,          <span class="c-cmt">// from your config</span>
+  <span class="c-key">authDomain</span>:         <span class="c-str">"your-project.firebaseapp.com"</span>,
+  <span class="c-key">databaseURL</span>:        <span class="c-str">"https://your-project-default-rtdb.firebaseio.com"</span>,
+  <span class="c-key">projectId</span>:          <span class="c-str">"your-project"</span>,
+  <span class="c-key">storageBucket</span>:      <span class="c-str">"your-project.appspot.com"</span>,
+  <span class="c-key">messagingSenderId</span>:  <span class="c-str">"123456789"</span>,
+  <span class="c-key">appId</span>:              <span class="c-str">"1:123456789:web:abc..."</span>
+};</div>
+    <button class="setup-dismiss-btn" onclick="dismissSetup()">I've added my config — hide this guide ✓</button>
+  </div>
+
+  <!-- Overall progress summary -->
+  <div class="overall-progress" id="overall-progress">
+    <div class="overall-title">Overall Progress</div>
+    <div class="overall-bar-wrap">
+      <div class="overall-bar-labels"><span>All pairs combined</span><strong id="overall-pct-label">0%</strong></div>
+      <div class="overall-bar"><div class="overall-bar-fill" id="overall-bar-fill" style="width:0%"></div></div>
+    </div>
+    <div class="overall-pairs" id="overall-pairs"></div>
+  </div>
+
+  <!-- Activity feed -->
+  <div class="activity-feed">
+    <div class="activity-head">
+      <h4>Recent Activity</h4>
+      <span id="activity-online">● Synced</span>
+    </div>
+    <div class="activity-list" id="activity-list">
+      <div class="activity-empty">No activity yet — start checking items off below.</div>
+    </div>
+  </div>
+
+  <div class="tracker-grid" id="tracker-grid"></div>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <span>Visser Accessibility Solutions · <span class="footer-gold">Report 3 Command Centre</span> · Five Pairs · APA 7th Edition</span>
+  <span>Pair 5 — Final Integration Lead</span>
+</footer>
+
+<script>
+/* ══════════════════ FLOW DETAIL DATA ══════════════════ */
+const flowDetails = {
+  exec: { badge:'All Pairs',bs:'background:#FEF0F8;color:#8B2060', title:'Executive Summary', cards:[
+    {l:'Timing',h:'Written last — after all sections complete',p:'Do not attempt this until every other section is finalized. Its job is to accurately reflect the full report.'},
+    {l:'Structure',h:'4–5 sentences in exact sequence',p:'① Company + stage. ② What prior reports found. ③ What this report recommends. ④ Expected outcome. ⑤ Three-year potential.'},
+  ]},
+  intro: { badge:'Pair 1',bs:'background:#EEEDFE;color:#4A3AAA', title:'1. Introduction (~0.5 page)', cards:[
+    {l:'Content',h:'Written last — for consistency',p:'2–3 sentences: Visser overview. 2–3 sentences: prior report findings (4 issues + 5 objectives). 1 sentence: what this report delivers.'},
+    {l:'Key Anchor',h:'Name all 4 business issues explicitly',p:'Market validation · Operational structure · Financial model · Organizational capacity. These are the foundation of every recommendation.'},
+  ]},
+  strat: { badge:'Pair 1',bs:'background:#EEEDFE;color:#4A3AAA', title:'2. Strategic Objectives (~1 page)', cards:[
+    {l:'Format',h:'5 SMART objectives — each must have 3 elements',p:'① Specific timeframe. ② Measurable outcome. ③ Direct link to one of the 4 business issues. Pull from Report 2.'},
+    {l:'Market Size',h:'CAGR projection — apply the formula',p:'Formula: FV = PV × (1 + CAGR)^6. Use 2024 as base year, 2030 as target. State assumptions if exact Canadian data is unavailable.'},
+  ]},
+  comp: { badge:'Pair 2',bs:'background:#EBF4FD;color:#1A5FA3', title:'3. Competitive Positioning (~0.5 page)', cards:[
+    {l:'Structure',h:'2 paragraphs + 1 statement + 1 table',p:'P1: What makes Visser different. P2: First-mover advantage in wheelchair-accessible gardening. Close: One-sentence positioning statement that guides all of Section 4.'},
+    {l:'Pillar Table',h:'4 competitive pillars from VRIO',p:'RHFAC Certification · Lived Experience · Garden Cart (physical product) · Community Garden Focus. Show Visser advantage and competitor gap for each.'},
+  ]},
+  t1:{badge:'Pair 2',bs:'background:#EBF4FD;color:#1A5FA3',title:'4.1 Digital Marketing & Brand Visibility',cards:[
+    {l:'Action',h:'Targeted digital campaign — 3 audiences',p:'Municipalities, healthcare organizations, non-profits. Specify platforms, content types, and posting cadence. Reference growing digital accessibility awareness.'},
+    {l:'PESTEL Link',h:'Social factor — accessibility awareness',p:'The Accessible Canada Act has increased public awareness of disability inclusion. Frame the campaign around this social momentum. Cite PESTEL Social factor from Report 1.'},
+  ]},
+  t2:{badge:'Pair 2',bs:'background:#EBF4FD;color:#1A5FA3',title:'4.2 Market Validation — Garden Cart Pilot',cards:[
+    {l:'Action',h:'Structured pilot — Cape Breton community gardens',p:'Reference Marcel\'s direct statement that community gardens are his most confident market segment. Design a 3–6 month pilot with defined success metrics.'},
+    {l:'Critical',h:'Resolve material choice in this phase',p:'Aluminum vs. steel is still unresolved and is a production blocker. This decision must be made during the pilot (0–6 months). Reference this as a critical path dependency.'},
+  ]},
+  t3:{badge:'Pair 2',bs:'background:#EBF4FD;color:#1A5FA3',title:'4.3 Pricing Strategy & Value Communication',cards:[
+    {l:'Action',h:'Three-scenario pricing model',p:'Conservative / Recommended / Premium. Show production cost, selling price, gross profit, and margin % for each. Use $350 as base production cost from Client Meeting Summary.'},
+    {l:'Five Forces',h:'Moderate-to-high buyer power',p:'Buyers (municipalities, non-profits) have procurement constraints and are price-sensitive. Reframe accessibility as investment not cost. Cite Buyer Power from Porter\'s Five Forces in Report 1.'},
+  ]},
+  t4:{badge:'Pair 2',bs:'background:#EBF4FD;color:#1A5FA3',title:'4.4 Supply Chain & Manufacturing Partnerships',cards:[
+    {l:'Action',h:'Identify and contract local manufacturer',p:'Source a Nova Scotia / Cape Breton manufacturer. Define evaluation criteria: cost, capacity, lead time, material capabilities (aluminum or steel).'},
+    {l:'Blocker',h:'Must secure before 2026 launch',p:'Manufacturing partnership is on the critical path for Marcel\'s 2026 product launch goal. Reference this as a prerequisite for the Short-term phase (0–6 months).'},
+  ]},
+  t5:{badge:'Pair 2',bs:'background:#EBF4FD;color:#1A5FA3',title:'4.5 Strategic Partnerships',cards:[
+    {l:'Action',h:'Formalize 3 types of partnerships',p:'① Municipalities (accessibility infrastructure projects). ② Disability non-profits (client referral network). ③ Rick Hansen Foundation network (national credibility and reach).'},
+    {l:'Source',h:'Ecosystem analysis — Report 2',p:'Partnerships were identified in the organizational ecosystem map of Report 2. This tactic formalizes those relationships. Reference ecosystem dynamics section directly.'},
+  ]},
+  t6:{badge:'Pair 2',bs:'background:#EBF4FD;color:#1A5FA3',title:'4.6 Hiring & Talent Development',cards:[
+    {l:'Roles',h:'RHFAC Consultant + Business Administrator',p:'RHFAC consultant expands service capacity and reduces founder dependency. Business admin handles operations, scheduling, and client management.'},
+    {l:'Risk Context',h:'Founder dependency = top operational risk',p:'Marcel\'s sole-proprietor model is the highest-ranked operational risk in the Issue Impact Matrix. Cite this explicitly as the motivation for this tactic.'},
+  ]},
+  t7:{badge:'Pair 2',bs:'background:#EBF4FD;color:#1A5FA3',title:'4.7 Digital Systems Implementation',cards:[
+    {l:'Action',h:'CRM + project management tools',p:'Select and implement an affordable SaaS CRM (HubSpot Free or Zoho). Add a project management tool (Notion, Asana, or Trello). Both must be operable part-time by Marcel in the short term.'},
+    {l:'PESTEL',h:'Technology factor — digital transformation gap',p:'Report 1 identified the absence of digital systems as an operational weakness. Reference this gap explicitly and cite the Technology PESTEL factor.'},
+  ]},
+  t8:{badge:'Pair 2',bs:'background:#EBF4FD;color:#1A5FA3',title:'4.8 Intellectual Property Protection',cards:[
+    {l:'Action',h:'File CIPO design patent before pilot launch',p:'A design patent protects the Garden Cart\'s visual appearance. File with CIPO (Canadian Intellectual Property Office) before any public demonstration to avoid prior art issues.'},
+    {l:'Risk',h:'IP theft = high-priority risk',p:'Without a patent, competitors can legally replicate the Garden Cart design. This is classified as a high-priority risk in the Issue Impact Matrix. Must be completed in 0–6 months.'},
+  ]},
+  time:{badge:'Pair 3',bs:'background:#EBF4E2;color:#2A5C0A',title:'5. Timeline & Milestones',cards:[
+    {l:'Three Phases',h:'Table format — each initiative across 3 phases',p:'Short (0–6 mo): Prototype, IP filing, CRM, pilot launch. Mid (6–18 mo): First hires, supply chain contracts, market expansion. Long (18–36 mo): Scale, revenue stabilization, partnership formalization.'},
+    {l:'Break-Even',h:'Formula: Fixed Costs ÷ Gross Profit per Unit',p:'State all assumptions clearly: production cost, selling price, gross profit per unit, startup costs. Express result as: "Visser must sell X Garden Carts to recover startup costs, achievable within Y months."'},
+  ]},
+  res:{badge:'Pair 3',bs:'background:#EBF4E2;color:#2A5C0A',title:'6. Resource Allocation (~1 page)',cards:[
+    {l:'Table',h:'5 resource categories — all figures in CAD',p:'Budget · People · Technology · Manufacturing · Legal/IP. Each row: what is needed + estimated cost. All costs must be CAD and justified with sources (BDC, CIPO, HubSpot).'},
+    {l:'Narrative',h:'3–4 sentences: the financial journey',p:'Answer 3 questions: ① How does Visser move from irregular → stable revenue by Year 2? ② What is the tipping point (consulting + Garden Cart sales cover operating costs)? ③ What does Year 3 financial health look like?'},
+  ]},
+  raci:{badge:'Pair 4',bs:'background:#F2F0EC;color:#484540',title:'7. Responsibility Matrix (RACI)',cards:[
+    {l:'Structure',h:'7 initiatives × 4 roles = 28 RACI cells',p:'Initiatives: Prototype · Digital Marketing · Supply Chain · Client Outreach · CRM · Patent Filing · Hiring. Roles: Marcel, RHFAC Consultant (future), Business Admin (future), External Contractors.'},
+    {l:'Key Note',h:'Matrix shows TARGET state, not current state',p:'Marcel will be Responsible for most tasks today. The RACI should show what the structure looks like ONCE the team is built — that is the strategic point of this section.'},
+  ]},
+  kpi:{badge:'Pair 4',bs:'background:#F2F0EC;color:#484540',title:'8. Key Performance Indicators (~2 pages)',cards:[
+    {l:'5 Categories',h:'11 KPIs — each needs baseline, target, method',p:'Customer: CAC, CLV, NPS. Market: brand awareness, NS market share. Campaign: conversion rate, CTR, ROAS. Financial: revenue growth, operating margin. Operational: project turnaround, milestone rate.'},
+    {l:'Key Formulas',h:'CAC + CLV + CLV:CAC ratio',p:'CAC = Marketing Budget ÷ New Clients. CLV = Avg. Value × Repeat Engagements. CLV:CAC must be ≥ 3:1. Build the 3-year revenue table with consulting + cart revenue columns.'},
+  ]},
+  risk:{badge:'Pair 5',bs:'background:#FDECEC;color:#892020',title:'9. Risk Mitigation (~2 pages)',cards:[
+    {l:'Method',h:'Likelihood × Impact (1–5) = Risk Score',p:'Score all 10 risks. Sum for Cumulative Risk Score. Classify: 15–25 High, 8–14 Moderate, 1–7 Low. Each risk needs: mitigation strategy + contingency action.'},
+    {l:'Coverage',h:'10 risks across 10 defined categories',p:'Must cover: founder dependency, IP theft, manufacturing delay, market validation failure, cash flow gap, regulatory change, digital marketing failure, competitor replication, hiring failure, CRM failure.'},
+  ]},
+  conc:{badge:'Pair 5',bs:'background:#FDECEC;color:#892020',title:'10. Conclusion (2 paragraphs)',cards:[
+    {l:'Paragraph 1',h:'Synthesis — zero new information',p:'What each section recommended, how collectively they address all 4 business issues. Every sentence must trace back to something already in the report.'},
+    {l:'Paragraph 2',h:'Forward-looking — three anchors',p:'① First-mover advantage in wheelchair-accessible gardening. ② Accessible Canada Act regulatory environment. ③ Projected market growth to 2030. Final sentence: "Execution positions Visser to become the leading provider in Nova Scotia within three years."'},
+  ]},
+};
+
+let activeFlowNode = null;
+function showFlowDetail(key, el) {
+  const d = flowDetails[key]; if (!d) return;
+  if (activeFlowNode === el) { closeFlowDetail(); return; }
+  if (activeFlowNode) activeFlowNode.classList.remove('f-active');
+  activeFlowNode = el; el.classList.add('f-active');
+  document.getElementById('fd-badge').textContent = d.badge;
+  document.getElementById('fd-badge').style.cssText = d.bs;
+  document.getElementById('fd-title').textContent = d.title;
+  document.getElementById('fd-body').innerHTML = d.cards.map(c =>
+    `<div class="fd-card"><div class="fd-label">${c.l}</div><h4>${c.h}</h4><p>${c.p}</p></div>`
+  ).join('');
+  const det = document.getElementById('flow-detail');
+  det.className = ''; void det.offsetWidth; det.className = 'open';
+  setTimeout(() => det.scrollIntoView({behavior:'smooth',block:'nearest'}), 60);
+}
+function closeFlowDetail() {
+  document.getElementById('flow-detail').className = '';
+  if (activeFlowNode) { activeFlowNode.classList.remove('f-active'); activeFlowNode = null; }
+}
+
+/* ══════════════════ TAB SWITCHING ══════════════════ */
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  closeFlowDetail();
+}
+
+/* ══════════════════ PAIR GUIDE SELECTOR ══════════════════ */
+function switchPair(n, btn) {
+  document.querySelectorAll('.pair-guide').forEach(g => g.classList.remove('active'));
+  document.querySelectorAll('.pair-sel-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('guide-' + n).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ══════════════════ TRACKER DATA ══════════════════ */
+const trackerData = [
+  { pair: 1, color: 'var(--p1)', bg: 'var(--p1-bg)', label:'P1', members: 'Satish Gurugubelli & Md Fazle Elahi', sections: 'Sections 1 & 2 — Introduction & Strategic Objectives',
+    deliverables: ['4 business issues confirmed and documented','5 SMART objectives restated from Report 2','CAGR formula applied with sourced market data','Projected 2030 market size calculated','Introduction written after all other sections'],
+    items: [
+      { section: 'Strategic Logic', checks: ['Links to at least one SMART objective','Grounded in findings from Reports 1 & 2','Recommendations feasible for sole proprietorship'] },
+      { section: 'Data & Formula', checks: ['CAGR formula applied correctly (FV = PV × (1+r)^n)','Market size estimate includes assumption language if needed','Canada-specific adjustment (2.5% economic share) stated'] },
+      { section: 'Academic Writing', checks: ['Written in third-person academic voice','APA 7 citations for all sources','Tables and figures correctly labelled','CAGR defined on first use'] },
+      { section: 'Output Sharing', checks: ['4 issues + 5 objectives shared with all pairs','CAGR figure shared with Pair 5','Introduction revised after receiving Pairs 2–4 summaries'] },
+    ]
+  },
+  { pair: 2, color: 'var(--p2)', bg: 'var(--p2-bg)', label:'P2', members: 'Precious Osato Uchenna & Benedicta Hanson-Greene', sections: 'Sections 3 & 4 — Competitive Positioning & 8 Tactical Initiatives',
+    deliverables: ['Competitive pillar table (4 pillars) completed','One-sentence positioning statement written','3-scenario pricing table built and sourced','Gross Profit per unit shared with Pairs 3 & 4','All 8 tactical initiatives each cite PESTEL or Five Forces'],
+    items: [
+      { section: 'Competitive Analysis', checks: ['VRIO framework used for differentiation','Both competitors researched (websites visited)','First-mover advantage paragraph written'] },
+      { section: 'Pricing Formula', checks: ['Gross Profit = Selling Price − Production Cost applied','Gross Margin % = (Gross Profit ÷ Selling Price) × 100 applied','Recommended scenario margin is 40%–60%','Pricing justified against benchmarks (BDC)'] },
+      { section: 'Tactical Initiatives', checks: ['Each of 8 tactics cites PESTEL or Five Forces','Each tactic states action, rationale, expected outcome','Tactics feasible for part-time founder in short term'] },
+      { section: 'Output Sharing', checks: ['Recommended price + gross profit sent to Pair 3','Pricing table sent to Pairs 4 & 5','Section summary sent to Pair 1 for intro consistency'] },
+    ]
+  },
+  { pair: 3, color: 'var(--p3)', bg: 'var(--p3-bg)', label:'P3', members: 'Paulina Osorio Ambriz & Jiulang Sang', sections: 'Sections 5 & 6 — Timeline, Milestones & Resource Allocation',
+    deliverables: ['3-phase timeline table completed','Break-even units calculated with stated assumptions','Budget allocation table with CAD figures','Financial sustainability narrative (3–4 sentences)','Fixed costs + marketing budget shared with Pairs 4 & 5'],
+    items: [
+      { section: 'Break-Even Formula', checks: ['Gross profit per unit received from Pair 2','Fixed costs estimated with sources (BDC, CIPO, HubSpot)','10% contingency applied to fixed costs','Break-even = Fixed Costs ÷ Gross Profit applied','Feasibility of result checked against market segments'] },
+      { section: 'Timeline', checks: ['3 phases structured: 0–6, 6–18, 18–36 months','Sequenced logically for part-time founder','Marcel 2026 launch goal reflected in Short-term phase'] },
+      { section: 'Resource Table', checks: ['5 resource categories covered (Budget, People, Tech, Mfg, Legal)','All figures in Canadian dollars (CAD)','Budget justified with BDC or CMA benchmarks'] },
+      { section: 'Output Sharing', checks: ['Marketing budget + fixed costs sent to Pair 4','Break-even figures + narrative sent to Pair 5','KPI targets received from Pair 4 before finalizing narrative'] },
+    ]
+  },
+  { pair: 4, color: 'var(--p4)', bg: 'var(--p4-bg)', label:'P4', members: 'Muhammad Hamza Rajput & Sonia Singh', sections: 'Sections 7 & 8 — RACI Matrix & KPIs',
+    deliverables: ['RACI matrix with 7 initiatives × 4 roles','CAC calculated from Pair 3 marketing budget','CLV calculated with RHFAC consulting rates','CLV:CAC ratio ≥ 3:1 demonstrated','3-year revenue projection table','All 11 KPIs with baseline, target, measurement method'],
+    items: [
+      { section: 'RACI Matrix', checks: ['All 7 initiatives assigned RACI for all 4 roles','Marcel = Accountable in early stages','Matrix reflects TARGET state once team is built','Future hires (RHFAC + Admin) roles defined'] },
+      { section: 'KPI Formulas', checks: ['CAC = Marketing Budget ÷ New Clients applied','CLV = Avg. Value × Avg. Engagements applied','CLV:CAC ratio calculated and benchmarked (≥ 3:1)','Revenue projection table covers Years 1, 2, 3'] },
+      { section: 'KPI Coverage', checks: ['Customer KPIs: CAC, CLV, NPS defined','Market KPIs: brand awareness + NS market share','Campaign KPIs: conversion, CTR, ROAS','Financial: revenue growth + operating margin','Operational: turnaround time + milestone rate'] },
+      { section: 'Output Sharing', checks: ['KPI targets sent to Pair 3 before they finalize narrative','KPI targets + revenue totals sent to Pair 5','Section summary sent to Pair 1'] },
+    ]
+  },
+  { pair: 5, color: 'var(--p5)', bg: 'var(--p5-bg)', label:'P5', members: 'Ujjwal Jyoti & Xiaowei Zhu', sections: 'Sections 9 & 10 — Risk Mitigation, Conclusion + Final Integration',
+    deliverables: ['10 risks scored (Likelihood × Impact)','Cumulative risk score calculated','Each risk has mitigation + contingency','Conclusion paragraph 1: synthesis','Conclusion paragraph 2: forward-looking','Section Quality Self-Check Tracker verified for all pairs'],
+    items: [
+      { section: 'Risk Scoring', checks: ['All 10 required risk categories covered','Likelihood × Impact formula applied to each','Risk scores classified (High/Moderate/Low)','Cumulative score calculated and interpreted'] },
+      { section: 'Risk Content', checks: ['Risks grounded in Report 1 Issue Impact Matrix','Financial risks aligned with Pair 3 break-even','KPI risks reference Pair 4 performance targets','ISO 31000 cited as methodology source'] },
+      { section: 'Conclusion', checks: ['Paragraph 1 synthesizes all sections','Paragraph 2 references first-mover advantage','Paragraph 2 references Accessible Canada Act','Paragraph 2 references 2030 market growth','No new information introduced in conclusion'] },
+      { section: 'Integration Check', checks: ['All pairs completed Section Quality Self-Check','Financial data consistent across all sections','Strategic logic consistent throughout report','All inconsistencies corrected','Report confirmed ready for submission'] },
+    ]
+  },
+];
+
+/* ══════════════════════════════════════════════════════
+   FIREBASE CONFIG
+   ─────────────────────────────────────────────────────
+   Replace these empty strings with your Firebase project
+   values from console.firebase.google.com
+   → Project Settings → General → Your apps → Web app
+══════════════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyCNRT-ohZn_ILttm_83q1wQ1eiXqfC99Bk",
+  authDomain:        "report-3-tracking.firebaseapp.com",
+  databaseURL:       "https://report-3-tracking-default-rtdb.firebaseio.com",
+  projectId:         "report-3-tracking",
+  storageBucket:     "report-3-tracking.firebasestorage.app",
+  messagingSenderId: "218277953637",
+  appId:             "1:218277953637:web:76cc577f162a41e433068c"
+};
+
+/* ══════════════════ FIREBASE INIT ══════════════════ */
+const IS_CONFIGURED = FIREBASE_CONFIG.databaseURL && FIREBASE_CONFIG.databaseURL.length > 10;
+let db = null;
+let checkState = {};
+let activityLog = [];
+
+if (IS_CONFIGURED) {
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+  } catch(e) { console.warn('Firebase init error:', e); }
+}
+
+/* ══════════════════ STATUS BAR ══════════════════ */
+function setStatus(state, text) {
+  const dot  = document.getElementById('fb-dot');
+  const span = document.getElementById('fb-status-text');
+  if (!dot || !span) return;
+  dot.className = 'fb-dot ' + state;
+  span.innerHTML = text;
+}
+
+function setLastUpdate(ts) {
+  const el = document.getElementById('fb-last-update');
+  if (!el || !ts) return;
+  const d = new Date(ts);
+  el.textContent = 'Last update: ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+if (!IS_CONFIGURED) {
+  setStatus('disconnected', '<strong>Not connected</strong> — add your Firebase config to enable shared tracking');
+}
+
+/* ══════════════════ SETUP PANEL ══════════════════ */
+function dismissSetup() {
+  const panel = document.getElementById('setup-panel');
+  if (panel) panel.style.display = 'none';
+}
+// Auto-hide setup panel if already configured
+if (IS_CONFIGURED) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const p = document.getElementById('setup-panel');
+    if (p) p.style.display = 'none';
+  });
+}
+
+/* ══════════════════ ACTIVITY LOG ══════════════════ */
+const PAIR_NAMES = {1:'Pair 1',2:'Pair 2',3:'Pair 3',4:'Pair 4',5:'Pair 5'};
+
+function pushActivity(pairNum, itemText, checked) {
+  if (!db) return;
+  const entry = {
+    pair: pairNum,
+    item: itemText,
+    checked: checked,
+    ts: Date.now()
+  };
+  db.ref('visser-tracker/activity').push(entry);
+}
+
+function renderActivity(log) {
+  const list = document.getElementById('activity-list');
+  if (!list) return;
+  if (!log || log.length === 0) {
+    list.innerHTML = '<div class="activity-empty">No activity yet — start checking items off below.</div>';
+    return;
+  }
+  const recent = log.slice(-20).reverse();
+  list.innerHTML = recent.map(entry => {
+    const ago = timeAgo(entry.ts);
+    const icon = entry.checked ? '✅' : '⬜';
+    const action = entry.checked ? 'checked off' : 'unchecked';
+    return `<div class="activity-item">
+      <span class="activity-icon">${icon}</span>
+      <span class="activity-text"><strong>${PAIR_NAMES[entry.pair] || 'A pair'}</strong> ${action}: ${entry.item}</span>
+      <span class="activity-time">${ago}</span>
+    </div>`;
+  }).join('');
+}
+
+function timeAgo(ts) {
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60)   return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400)return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+/* ══════════════════ OVERALL PROGRESS ══════════════════ */
+function renderOverall() {
+  let totalAll = 0, doneAll = 0;
+  const pairChips = trackerData.map(p => {
+    let tot = 0, done = 0;
+    const pKey = 'p' + p.pair;
+    p.items.forEach((s, si) => s.checks.forEach((_, ci) => {
+      tot++;
+      if ((checkState[pKey] || {})[`${si}-${ci}`]) done++;
+    }));
+    totalAll += tot; doneAll += done;
+    const pct = tot ? Math.round((done/tot)*100) : 0;
+    return `<div class="overall-pair-chip"><span>${p.label}</span><span class="pct">${pct}%</span></div>`;
+  }).join('');
+
+  const pct = totalAll ? Math.round((doneAll/totalAll)*100) : 0;
+  const fill = document.getElementById('overall-bar-fill');
+  const label = document.getElementById('overall-pct-label');
+  const pairs = document.getElementById('overall-pairs');
+  if (fill)  fill.style.width = pct + '%';
+  if (label) label.textContent = pct + '%';
+  if (pairs) pairs.innerHTML = pairChips;
+}
+
+/* ══════════════════ RENDER TRACKER ══════════════════ */
+function renderTracker() {
+  const grid = document.getElementById('tracker-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  trackerData.forEach(p => {
+    const pKey = 'p' + p.pair;
+    if (!checkState[pKey]) checkState[pKey] = {};
+    let totalItems = 0;
+    p.items.forEach(s => s.checks.forEach(() => totalItems++));
+
+    const card = document.createElement('div');
+    card.className = 'tracker-card';
+
+    let completedItems = 0;
+    p.items.forEach((s, si) => {
+      s.checks.forEach((_, ci) => {
+        if (checkState[pKey][`${si}-${ci}`]) completedItems++;
+      });
+    });
+
+    const pct = Math.round((completedItems / totalItems) * 100);
+    let statusClass = 'status-not-started', statusText = 'Not Started';
+    if (pct > 0 && pct < 100) { statusClass = 'status-in-progress'; statusText = 'In Progress'; }
+    if (pct === 100) { statusClass = 'status-complete'; statusText = 'Complete ✓'; }
+
+    card.innerHTML = `
+      <div class="tracker-head">
+        <div class="tracker-num" style="background:${p.bg};color:${p.color}">${p.label}</div>
+        <div class="tracker-head-info">
+          <h4>${p.members}</h4>
+          <p>${p.sections}</p>
+        </div>
+        <div class="tracker-status"><span class="status-chip ${statusClass}"><span class="status-dot"></span>${statusText}</span></div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-labels"><span>Progress</span><strong>${completedItems}/${totalItems} items · ${pct}%</strong></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${p.color}"></div></div>
+      </div>
+      <div class="checklist-body">
+        ${p.items.map((s, si) => `
+          <div class="check-section">
+            <div class="check-section-label">${s.section}</div>
+            ${s.checks.map((c, ci) => {
+              const checked = (checkState[pKey] || {})[`${si}-${ci}`] || false;
+              return `<div class="check-item" onclick="toggleCheck(${p.pair},${si},${ci},${JSON.stringify(c).replace(/'/g,'&#39;')})">
+                <div class="check-box${checked?' checked':''}"></div>
+                <div class="check-label${checked?' checked':''}">${c}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        `).join('')}
+      </div>
+      <div class="tracker-deliverables">
+        <h5>Key Deliverables</h5>
+        ${p.deliverables.map(d => `<div class="del-item">${d}</div>`).join('')}
+      </div>
+      <button class="reset-btn" onclick="resetPair(${p.pair})">↺ Reset Pair ${p.pair} checklist</button>
+    `;
+    grid.appendChild(card);
+  });
+
+  renderOverall();
+}
+
+/* ══════════════════ TOGGLE (writes to Firebase) ══════════════════ */
+function toggleCheck(pair, si, ci, itemText) {
+  const pKey = 'p' + pair;
+  const k = `${si}-${ci}`;
+  if (!checkState[pKey]) checkState[pKey] = {};
+  const newVal = !checkState[pKey][k];
+
+  if (IS_CONFIGURED && db) {
+    // Write single key to Firebase — triggers onValue for all users
+    db.ref(`visser-tracker/state/${pKey}/${k}`).set(newVal);
+    pushActivity(pair, itemText, newVal);
+  } else {
+    // Fallback: local only
+    checkState[pKey][k] = newVal;
+    renderTracker();
+  }
+}
+
+/* ══════════════════ RESET PAIR (writes to Firebase) ══════════════════ */
+function resetPair(pair) {
+  const pKey = 'p' + pair;
+  if (IS_CONFIGURED && db) {
+    db.ref(`visser-tracker/state/${pKey}`).set(null);
+    const entry = { pair, item: 'Reset all items', checked: false, ts: Date.now() };
+    db.ref('visser-tracker/activity').push(entry);
+  } else {
+    checkState[pKey] = {};
+    renderTracker();
+  }
+}
+
+/* ══════════════════ FIREBASE LISTENERS ══════════════════ */
+if (IS_CONFIGURED && db) {
+
+  setStatus('loading', 'Connecting to shared tracker…');
+
+  // Listen to full state — fires on every change, for all users
+  db.ref('visser-tracker/state').on('value', snapshot => {
+    const data = snapshot.val() || {};
+    checkState = data;
+    renderTracker();
+    setStatus('connected', '<strong>Live</strong> — changes sync across all devices instantly');
+    setLastUpdate(Date.now());
+  }, err => {
+    setStatus('disconnected', '<strong>Connection error</strong> — ' + err.message);
+  });
+
+  // Listen to online/offline
+  db.ref('.info/connected').on('value', snap => {
+    if (!snap.val()) {
+      setStatus('disconnected', '<strong>Offline</strong> — reconnecting…');
+      const el = document.getElementById('activity-online');
+      if (el) el.textContent = '○ Offline';
+    } else {
+      const el = document.getElementById('activity-online');
+      if (el) el.textContent = '● Synced';
+    }
+  });
+
+  // Listen to activity log
+  db.ref('visser-tracker/activity').limitToLast(30).on('value', snapshot => {
+    const data = snapshot.val();
+    activityLog = data ? Object.values(data).sort((a,b) => a.ts - b.ts) : [];
+    renderActivity(activityLog);
+  });
+
+} else {
+  // No Firebase — render tracker in local mode
+  renderTracker();
+  renderActivity([]);
+}
+</script>
+
+</body>
+</html>
